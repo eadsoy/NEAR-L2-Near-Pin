@@ -1,11 +1,11 @@
 import 'regenerator-runtime/runtime';
 import React from 'react';
 import PropTypes from 'prop-types';
-import CreateTodo from './components/CreateTodo';
-import TodoList from './components/TodoList';
+import Form from './components/Form';
+import ResourceList from './components/ResourceList';
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
-
+  
   const signIn = () => {
     wallet.requestSignIn(
       nearConfig.contractName,
@@ -17,6 +17,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     wallet.signOut();
     window.location.replace(window.location.origin + window.location.pathname);
   };
+
   return (
     <>
       <h1>NEAR Resources</h1>
@@ -28,8 +29,10 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
                 <button onClick={signOut}>Log out</button>
               </h2>
               
-              <CreateTodo contract={contract} />
-              <TodoList contract={contract} />
+              {/* <Form contract={contract}  onSubmit={onSubmit} currentUser={currentUser}  /> */}
+              <Form contract={contract}  currentUser={currentUser}  />
+
+              <ResourceList contract={contract} />
             </div>
           : 
           <div>

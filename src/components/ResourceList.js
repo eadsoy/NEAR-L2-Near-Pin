@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Resource } from "./Resource";
 
-const PER_PAGE_LIMIT = 3;
+const PER_PAGE_LIMIT = 10;
 
 const ResourceList = ({ contract }) => {
   const [resources, setResources] = useState([]);
@@ -18,12 +18,13 @@ const ResourceList = ({ contract }) => {
     }
 
     // every second after the component first mounts
-    // update the list of todos by invoking the get
+    // update the list of todos by invoking the getResources
     // method on the smart contract
     const id = setInterval(() => {
+      
       contract
-        .get({ offset, limit: PER_PAGE_LIMIT })
-        .then((resources) => setResources(resources));
+        .getResources({ offset, limit: PER_PAGE_LIMIT })
+        .then((resources) => {console.log(resources);setResources(resources)});
     }, 1000);
 
     return () => clearInterval(id);
@@ -38,7 +39,7 @@ const ResourceList = ({ contract }) => {
       {" "}
       <button onClick={() => setPage((page) => page + 1)}>&gt;</button>
       {resources.map((resource) => (
-        <li key={resource.id}>
+        <li key={resource.created_at}>
           <Resource contract={contract} {...resource} />
         </li>
       ))}

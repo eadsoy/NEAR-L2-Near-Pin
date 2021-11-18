@@ -1,11 +1,14 @@
 // src/components/Todo.js
 //import { useState } from "react";
 
-export function Resource({ resource, url, title, category }) {
-  
+export function Resource({ creator, url, title, category }) {
+  console.log('resource:', creator)
   return (
     <>
-      <p>{resource}</p>
+      <p>{creator}</p>
+      <p>{url}</p>
+      <p>{title}</p>
+      <p>{category}</p>
     </>
   );
 }

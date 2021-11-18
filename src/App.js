@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime';
 import React from 'react';
 import PropTypes from 'prop-types';
-import Form from './components/Form';
+import CreateResource from './components/CreateResource';
 import ResourceList from './components/ResourceList';
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
@@ -29,10 +29,10 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
                 <button onClick={signOut}>Log out</button>
               </h2>
               
-              {/* <Form contract={contract}  onSubmit={onSubmit} currentUser={currentUser}  /> */}
-              <Form contract={contract}  currentUser={currentUser}  />
+              {/* <CreateResource contract={contract}  onSubmit={onSubmit} currentUser={currentUser}  /> */}
+              <CreateResource contract={contract}  currentUser={currentUser}  />
 
-              <ResourceList contract={contract} />
+              <ResourceList contract={contract} currentUser={currentUser}/>
             </div>
           : 
           <div>

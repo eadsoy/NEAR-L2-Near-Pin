@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import getConfig from './config.js';
 import * as nearAPI from 'near-api-js';
+import './index.css';
 
 // Initializing contract
 async function initContract() {

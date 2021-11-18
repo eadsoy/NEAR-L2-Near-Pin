@@ -24,11 +24,11 @@ const CreateResource = ({ contract, currentUser }) => {
     console.log('my resource', resource);
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="w-full rounded px-8 pt-6 pb-8 mb-4">
       <fieldset id="fieldset">
-        <p>Did you stumble upon a useful resource lately, { currentUser.accountId }? Share it with the NEAR community!</p>
-        <p className="highlight">
-          <label htmlFor="title">Resource Title:</label>
+        <p className="text-xl font-bold text-gray-800">Did you stumble upon a useful resource lately, { currentUser.accountId }? Share it with the NEAR community!</p>
+        <p className="highlight max-w-sm pt-6">
+          <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">Resource Title:</label>
           <input
             autoComplete="off"
             autoFocus
@@ -37,10 +37,11 @@ const CreateResource = ({ contract, currentUser }) => {
             required
             value={title}
             onChange={({ target }) => setTitle(target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </p>
-        <p className="highlight">
-          <label htmlFor="url">Resource URL:</label>
+        <p className="highlight max-w-sm">
+          <label htmlFor="url" className="block text-gray-700 text-sm font-bold mb-2">Resource URL:</label>
           <input
             autoComplete="off"
             autoFocus
@@ -48,10 +49,11 @@ const CreateResource = ({ contract, currentUser }) => {
             required
             value={url}
             onChange={({ target }) => setUrl(target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </p>
-        <p className="highlight">
-          <label htmlFor="category">Category:</label>
+        <p className="highlight max-w-sm">
+          <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
           <input
             autoComplete="off"
             autoFocus
@@ -59,6 +61,7 @@ const CreateResource = ({ contract, currentUser }) => {
             required
             value={category}
             onChange={({ target }) => setCategory(target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </p>
         {/* <p>
@@ -86,11 +89,13 @@ const CreateResource = ({ contract, currentUser }) => {
           />
           <span title="vote"></span>
         </p> */}
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className="shadow bg-yellow-400 hover:bg-yellow-300 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 rounded">
           Submit
         </button>
       </fieldset>
     </form>
+
+
     
   );
 }

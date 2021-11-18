@@ -44,8 +44,8 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
 
 App.propTypes = {
   contract: PropTypes.shape({
-    create: PropTypes.func.isRequired,
-    get: PropTypes.func.isRequired,
+    addResource: PropTypes.func.isRequired,
+    getResources: PropTypes.func.isRequired,
   }).isRequired,
   currentUser: PropTypes.shape({
     accountId: PropTypes.string.isRequired,

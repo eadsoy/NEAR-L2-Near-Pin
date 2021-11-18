@@ -1,3 +1,5 @@
 {
-  "extends": "near-sdk-as/asconfig.json"
+  "workspaces": [
+    "src/resources"
+  ]
 }

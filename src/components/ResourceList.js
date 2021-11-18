@@ -4,7 +4,7 @@ import { Resource } from "./Resource";
 
 const PER_PAGE_LIMIT = 10;
 
-const ResourceList = ({ contract }) => {
+const ResourceList = ({ contract, currentUser}) => {
   const [resources, setResources] = useState([]);
   const [page, setPage] = useState(1);
 
@@ -32,10 +32,9 @@ const ResourceList = ({ contract }) => {
 
   return (
     <ul>
-      
-      {resources.map((resource) => (
-        <li key={resource.created_at}>
-          <Resource contract={contract} {...resource} />
+      {resources.map((resource, index) => (
+        <li key={index}>
+          <Resource  id={index} contract={contract} {...resource} currentUser={currentUser}/>
         </li>
       ))}
 

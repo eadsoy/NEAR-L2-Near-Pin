@@ -32,17 +32,20 @@ const ResourceList = ({ contract }) => {
 
   return (
     <ul>
-      <div className="flex">
-      Current Page: {page}
-      </div>
-      <button onClick={() => setPage((page) => page - 1)}>&lt;</button>
-      {" "}
-      <button onClick={() => setPage((page) => page + 1)}>&gt;</button>
+      
       {resources.map((resource) => (
         <li key={resource.created_at}>
           <Resource contract={contract} {...resource} />
         </li>
       ))}
+
+
+      <div className="flex">
+        Current Page: {page}
+      </div>
+      <button onClick={() => setPage((page) => page - 1)}>&lt;</button>
+      {" "}
+      <button onClick={() => setPage((page) => page + 1)}>&gt;</button>
     </ul>
   );
 }

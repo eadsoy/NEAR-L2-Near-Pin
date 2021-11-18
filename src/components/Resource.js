@@ -6,8 +6,8 @@ export function Resource({ creator, url, title, category }) {
   return (
     <>
       <p>{creator}</p>
-      <p>{url}</p>
       <p>{title}</p>
+      <p>{url}</p>
       <p>{category}</p>
     </>
   );

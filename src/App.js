@@ -5,31 +5,7 @@ import Form from './components/Form';
 import ResourceList from './components/ResourceList';
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
-  // const onSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   const { fieldset, message, donation } = e.target.elements;
-
-  //   fieldset.disabled = true;
-
-  //   // TODO: optimistically update page with new message,
-  //   // update blockchain data in background
-  //   // add uuid to each message, so we know which one is already known
-  //   contract.addMessage(
-  //     { text: message.value },
-  //     BOATLOAD_OF_GAS,
-  //     Big(donation.value || '0').times(10 ** 24).toFixed()
-  //   ).then(() => {
-  //     contract.getMessages().then(messages => {
-  //       setMessages(messages);
-  //       message.value = '';
-  //       donation.value = SUGGESTED_DONATION;
-  //       fieldset.disabled = false;
-  //       message.focus();
-  //     });
-  //   });
-  // };
-
+  
   const signIn = () => {
     wallet.requestSignIn(
       nearConfig.contractName,
@@ -41,6 +17,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     wallet.signOut();
     window.location.replace(window.location.origin + window.location.pathname);
   };
+
   return (
     <>
       <h1>NEAR Resources</h1>

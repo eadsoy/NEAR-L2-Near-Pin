@@ -92,3 +92,15 @@ export function assert_single_promise_success(): void {
 }
 //export const RESOURCE_KEY = "state"
 export const PAGE_SIZE = 10
+
+// -- https://www.typescriptlang.org/docs/handbook/enums.html
+// -- Using this returns compile error?
+// export enum Category {
+//   NEAR = "NEAR", 
+//   LEARNNEAR = "Learn NEAR",
+//   BCN = "Bitcoin",
+//   BCH = "Blockchain",
+//   NEARCMTY = "NEAR Community",
+//   NEARUNI = "NEAR University",
+//   MISC = "Miscellaneous"
+// }

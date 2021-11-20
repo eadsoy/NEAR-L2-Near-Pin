@@ -95,8 +95,6 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
             <p>{voteCount}</p>
           </div>
         </div>
-        <button disabled>hello</button>
-
       </div>
     </>
   );

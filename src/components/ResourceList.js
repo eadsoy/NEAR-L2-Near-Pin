@@ -32,9 +32,9 @@ const ResourceList = ({ contract, currentUser}) => {
 
   return (
     <ul>
-      {resources.map((resource, index) => (
+      {resources.reverse().map((resource, index) => (
         <li key={index}>
-          <Resource  id={index} contract={contract} {...resource} currentUser={currentUser}/>
+          <Resource id={index} contract={contract} {...resource} currentUser={currentUser}/>
         </li>
       ))}
 

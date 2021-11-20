@@ -1,72 +1,85 @@
 import { Context, logging, u128} from "near-sdk-core"
-import { Resource, Vote, Donation, resources, creators, votes, voters, donations} from "./models"
-import { AccountId, PAGE_SIZE } from "../../utils"
+import { Resource, Donation, resources, donations, urls} from "./models"
+import { PAGE_SIZE } from "../../utils"
 
 // ____________________________________________________
 // ___________________ add resource ___________________
 // ____________________________________________________
-export function addResource(accountId: AccountId, title: string, url: string, category: string): void {
-  // url has to have identifier from valid content provider
+export function addResource(title: string, url: string, category: string): void {
+  // url has to be valid
   assert(isValidURL(url), "URL is not valid, must start with valid https://")
+  assert(!urls.has(url), "URL already exists")
 
-  // save the resource to storage
+  // create new Resource
   const resource = new Resource(title, url, category)
 
+  // save the resource to storage
   resources.push(resource)
-  creators.add(accountId)
+  // add url to urls
+  urls.add(url)
+
+  logging.log('resource created')
+  logging.log(resource)
 }
 
-// ____________________________________________________
+// ___________________________________________________
 // __________________ get resources __________________
-// ____________________________________________________
+// ___________________________________________________
+/**
+ * 
+ * @returns resources
+ */
 export function getResources(): Resource[] {
   const numResources = min(PAGE_SIZE, resources.length);
   const startIndex = resources.length - numResources;
   const result = new Array<Resource>(numResources);
+
   for(let i = 0; i < numResources; i++) {
     result[i] = resources[i + startIndex];
   }
+
   return result;
 }
 
 // ____________________________________________________
 // ______________ add vote to a resource ______________
 // ____________________________________________________
-export function addVote(voter: string, value: i8, resourceId: i32 ): void {
-  // TODO: Voter shouldn't be able to upvote more than once
-  //assert(!voters.has(voter) && , "Voter has already voted")
- 
-  assert(resourceId >= 0, 'resourceId must be bigger than 0');
-	assert(resourceId < resources.length, 'resourceId must be valid');
+export function addVote(resourceId: i32 ): void {
+  // assert resourceId
+  assert(resourceId >= 0, "resourceId must be bigger than 0");
+	assert(resourceId < resources.length, "resourceId must be valid");
 
+  // get resource with resourceId
   const resource = resources[resourceId];
-  logging.log("resource is: ")
-  logging.log(resource)
-  // calculate the new score for the meme
-  resource.vote_score = resource.vote_score + value
-  // save it back to storage
+  // get voter 
+  const voter = Context.predecessor
+
+  // voter cannot vote for their own resources 
+  assert(!resource.creator.includes(voter), "Cannot vote own resource!")
+  // voter cannot vote twice for same resource
+  assert(!resource.votes.has(voter), "Voter has already voted!")
+
+  // increment vote_score by 1
+  resource.vote_score = resource.vote_score + 1
+  // add voter to votes
+  resource.votes.add(voter);
+  // update resource in resources
   resources.replace(resourceId, resource);
-  // remember the voter has voted
-  voters.add(voter)
-  // add the new Vote
-  votes.push(new Vote(value, voter, resourceId))
-}
 
-// __________________________________________________________
-// ______________ get vote count of a resource ______________
-// __________________________________________________________
-export function getVotesCount(resourceId: i32): u32 {
-  const resource = resources[resourceId];
-
-  return resource.vote_score
+  logging.log('vote submitted')
+  logging.log(resource)
 }
 
 // ________________________________________________________
 // ______________ add donation to a resource ______________
 // ________________________________________________________
+/**
+ * 
+ * @param resourceId 
+ */
 export function addDonation(resourceId: i32): void {
-  assert(resourceId >= 0, 'resourceId must be bigger than 0');
-	assert(resourceId < resources.length, 'resourceId must be valid');
+  assert(resourceId >= 0, "resourceId must be bigger than 0");
+	assert(resourceId < resources.length, "resourceId must be valid");
 
   const resource = resources[resourceId];
 
@@ -75,32 +88,36 @@ export function addDonation(resourceId: i32): void {
 
   // save it back to storage
   resources.replace(resourceId, resource);
-  // add the new Donation
+
+  // create new Donation and add to donations
   donations.push(new Donation())
+
+  logging.log('donation submitted to resource')
+  logging.log(resource)
 }
 
 // ______________________________________________________________
 // ______________ get donation count of a resource ______________
 // ______________________________________________________________
+/**
+ * 
+ * @param resourceId 
+ * @returns total_donations
+ */
 export function getDonationsCount(resourceId: i32): u128 {
   const resource = resources[resourceId];
+  
   return resource.total_donations
 }
 
 // __________________________________________
 // ______________ validate url ______________
 // __________________________________________
+/**
+ * 
+ * @param url 
+ * @returns bool
+ */
 function isValidURL(url: string): bool {
   return url.startsWith("https://")
 }
-
-
-// TODO: 
-// 1- No multiple upvotes
-//    -- Check if voter has upvoted resource before 
-//       or disable from frontend after upvote
-// 2- Tests
-// 3- Front End
-// 4- Figma
-// 5- Loom Video
-// 6- 

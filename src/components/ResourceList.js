@@ -18,7 +18,7 @@ const ResourceList = ({ contract, currentUser}) => {
     }
 
     // every second after the component first mounts
-    // update the list of todos by invoking the getResources
+    // update the list of resources by invoking the getResources
     // method on the smart contract
     const id = setInterval(() => {
       contract
@@ -32,7 +32,7 @@ const ResourceList = ({ contract, currentUser}) => {
   return (
     <ul>
       {resources.map((resource, index) => (
-        <li key={index}>
+        <li key={index} className="pl-6 ml-6 mt-6 pt-6">
           <Resource id={index} contract={contract} {...resource} currentUser={currentUser}/>
         </li>
       ))}

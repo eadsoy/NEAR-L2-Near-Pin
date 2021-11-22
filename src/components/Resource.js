@@ -1,4 +1,3 @@
-// src/components/Todo.js
 import { useState } from "react";
 // get our fontawesome imports
 import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
@@ -31,11 +30,12 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     const vote = await contract.addVote({ resourceId: id, voter: currentUser.accountId, value: 1})
     .then(() => {
       setVoted(0)
+      notify("success")
     })
     .catch(error => {
       console.log('error', error)
       setCreated(false)
-      notify()
+      notify('error')
       setVoteCount(voteCount);
     });
     console.log('vote', vote)
@@ -48,17 +48,45 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     console.log('donation', donation)
   }
 
-  const notify = () => {
-    toast.error("You can't vote your own resource!", {
-      theme: "dark",
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+  const notify = (type) => {
+    switch (type) {
+      default:
+      toast.error("You can't vote your own resource!", {
+        theme: "colored",
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      break;
+      case 'success':
+        toast.success('Vote submitted!', {
+          icon: "🚀",
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+      break;
+      case 'donation':
+        toast.success('Transaction successfully made!', {
+          icon: "🚀",
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+      break;
+    }
   }
   //const tagColor = ['bg-red-300', 'bg-blue-500', 'bg-yellow-600']
 
@@ -66,43 +94,53 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     <>
       <div className="max-w-4xl	p-4">
         <div className="p-8 bg-white rounded shadow-md relative">
-          <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
-          <p className="font-bold	">{creator}</p>
-          <a href={url} rel="noreferrer" target="_blank">{url}</a>
-          <div
-            className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full"
-          >
-            {category}
+          <div className="flex flex-row">
+            <h2 className="text-2xl font-bold text-gray-800 mr-4">{title}</h2>
+            <div
+              className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full"
+            >
+              {category}
+            </div>
+            
           </div>
+          <p className="font-bold	pt-1 mb-5 text-gray-700"><span className="text-xs pr-2">Added by </span>{creator}</p>
+          <a href={url} rel="noreferrer" target="_blank" className="text-lg font-bold text-blue-800 pt-6 mt-6 mb-6 pb-6">{url}</a>
           {/* <p>
             <input type="checkbox" checked={checked} onChange={complete} />
             {task}
           </p> */}  
-          <div className="pt-6">
-            <div className="flex flex-row">
-              <label htmlFor="donation">Total Donations:</label>
-              <p className="pl-6 ml-3">{total_donations/1e24}<span title="NEAR Tokens" className="pl-2">Ⓝ</span></p>
+          <div className="pt-6 mt-6 text-sm">     
+            <div>
+              <label htmlFor="donation">Say thanks</label>
+              <input
+                autoComplete="off"
+                //defaultValue={'0'}
+                autoFocus
+                id="donation"
+                className="shadow appearance-none border rounded w-1/5 py-2 px-2 ml-6 pl-6 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                max={currentUser.balance}
+                min="0"
+                step="0.01"
+                type="number"
+                placeholder="0"
+                value={donated}
+                onChange={({ target }) => setDonated(target.value)}
+              />
+              <span title="NEAR Tokens" className="pl-2">Ⓝ</span>
+              <button 
+                onClick={handleDonation}
+                className="shadow bg-blue-600 hover:bg-blue-700 focus:shadow-outline focus:outline-none text-white font-bold mt-3 ml-3 py-1 px-3 text-base rounded">Donate
+              </button>
             </div>
-            
-            <label htmlFor="donation">Donation (optional):</label>
-            <input
-              autoComplete="off"
-              //defaultValue={'0'}
-              autoFocus
-              id="donation"
-              className="shadow appearance-none border rounded w-1/5 py-2 px-3 ml-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              max={currentUser.balance}
-              min="0"
-              step="0.01"
-              type="number"
-              value={donated}
-              onChange={({ target }) => setDonated(target.value)}
-            />
-            <span title="NEAR Tokens" className="pl-2">Ⓝ</span>
-            <button 
-              onClick={handleDonation}
-              className="shadow bg-blue-700 hover:bg-blue-800 focus:shadow-outline focus:outline-none text-white font-bold mt-3 ml-3 py-2 px-4 text-base rounded">Donate
-            </button>
+            <div className="flex flex-row pt-6">
+              <label htmlFor="donation">Donations</label>
+              {/* <p className="pl-6 ml-3">{total_donations/1e24}<span title="NEAR Tokens" className="pl-2">Ⓝ</span></p> */}
+              <div
+                className="ml-6 pl-6 text-s inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-gray-100 text-gray-600 rounded-full"
+              >
+                {total_donations/1e24}<span title="NEAR Tokens" className="pl-2">Ⓝ</span>
+              </div>
+            </div>
           </div>
         
           <div className="absolute bottom-5 right-0 h-16 w-16">

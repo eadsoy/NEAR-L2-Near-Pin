@@ -1,19 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Modal({ contract, currentUser }) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [category, setCategory] = useState("");
-  
-
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setLoading(true);
-
     // invoke the smart contract's addResource method
     const resource = await contract.addResource({ title, category, url, accountId: currentUser.accountId});
     setTitle("");
@@ -21,13 +18,23 @@ export default function Modal({ contract, currentUser }) {
     setCategory("");
     setLoading(false);
     setShowModal(false)
-    // print the todo to the console
+    // print the resource to the console
     console.log('my resource', resource);
   }
+
+  useEffect(() => {
+    const categoryId = setInterval(() => {
+      contract
+        .getCategories()
+        .then((categories) => {console.log(categories);setCategories(categories)})
+    }, 1000);
+
+    return () => clearInterval(categoryId);
+  }, [contract]);
   return (
     <>
       <button
-        className="bg-blue-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 ml-6"
+        className="bg-blue-700 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 ml-6"
         type="button"
         onClick={() => setShowModal(true)}
       >
@@ -59,9 +66,9 @@ export default function Modal({ contract, currentUser }) {
                 <div className="relative p-6 flex-auto">
                 <form onSubmit={handleSubmit} className="w-full rounded px-8 pt-6 pb-8 mb-4">
                   <fieldset id="fieldset">
-                    <p className="text-xl font-bold text-gray-800">Did you stumble upon a useful resource lately, { currentUser.accountId }? Share it with the NEAR community!</p>
+                    <p className="text-xl font-bold text-gray-800">Did you come across a useful resource lately, { currentUser.accountId }? Share it with the NEAR community!</p>
                     <p className="highlight max-w-sm pt-6">
-                      <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">Resource Title:</label>
+                      <label htmlFor="title" className="block tracking-wide text-gray-700 text-sm font-bold mb-2">Resource Title</label>
                       <input
                         autoComplete="off"
                         autoFocus
@@ -74,7 +81,7 @@ export default function Modal({ contract, currentUser }) {
                       />
                     </p>
                     <p className="highlight max-w-sm">
-                      <label htmlFor="url" className="block text-gray-700 text-sm font-bold mb-2">Resource URL:</label>
+                      <label htmlFor="url" className="block tracking-wide text-gray-700 text-sm font-bold mb-2 mt-5">Resource URL</label>
                       <input
                         autoComplete="off"
                         autoFocus
@@ -85,43 +92,42 @@ export default function Modal({ contract, currentUser }) {
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       />
                     </p>
-                    <p className="highlight max-w-sm">
+                    <p className="highlight max-w-sm pt-6">
                       <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+
+                      <p>Select from list</p>
+                      <div className="relative"> 
+                        <select 
+                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
+                        id="grid-state"
+                        value={category}
+                        onChange={({ target }) => setCategory(target.value)}
+                        >
+                          {categories.map((individualCategory, index) => (
+                            <option 
+                            key={index} 
+                            id={index}
+                            value={individualCategory}
+                            > 
+                              {individualCategory} 
+                            </option>
+                          ))}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                      </div>
+
+                      <p>or add new category</p>
                       <input
                         autoComplete="off"
                         autoFocus
                         id="category"
-                        required
                         value={category}
                         onChange={({ target }) => setCategory(target.value)}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       />
                     </p>
-                    {/* <p>
-                      <label htmlFor="donation">Donation (optional):</label>
-                      <input
-                        autoComplete="off"
-                        defaultValue={'0'}
-                        id="donation"
-                        max={Big(currentUser.balance).div(10 ** 24)}
-                        min="0"
-                        step="0.01"
-                        type="number"
-                      />
-                      <span title="NEAR Tokens">Ⓝ</span>
-                    </p>
-                    <p>
-                      <label htmlFor="vote">Vote:</label>
-                      <input
-                        autoComplete="off"
-                        defaultValue={'0'}
-                        id="vote"
-                        max="1"
-                        min="0"
-                        type="number"
-                      />
-                      <span title="vote"></span>
-                    </p> */}
                     <button type="submit" disabled={loading} className="shadow bg-blue-700 hover:bg-blue-800 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 rounded">
                       Submit
                     </button>
@@ -136,13 +142,6 @@ export default function Modal({ contract, currentUser }) {
                     onClick={() => setShowModal(false)}
                   >
                     Close
-                  </button>
-                  <button
-                    className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Save Changes
                   </button>
                 </div>
               </div>

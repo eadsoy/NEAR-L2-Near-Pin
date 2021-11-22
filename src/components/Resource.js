@@ -4,40 +4,64 @@ import { useState } from "react";
 import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Big from 'big.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const ATTACHED_GAS = Big(3).times(10 ** 13).toFixed();
 
 export function Resource({ contract, creator, url, title, category, vote_score, votes,  id, currentUser, total_donations }) {
+  // check if already voted
+  const [voted, setVoted] = useState(votes.indexOf(currentUser.accountId) === -1 ? -1 : 0)
   // button hover
-  const [test, setTest] = useState(votes.indexOf(currentUser.accountId))
- 
   const [over, setOver] = useState(false);
   //button clicked
   const [loading, setLoading] = useState(false);
-
+  const [created, setCreated] = useState(true);
   // vote count
   const [voteCount, setVoteCount] = useState(vote_score);
+  const [donated, setDonated] = useState("");
   
-  const [donation, setDonation] = useState("");
-  
-  function handleClick() {
+  const handleClick = async (event) => {
     // Increment vote count by 1
+    console.log('id',id)
     setVoteCount(voteCount + 1);
     setLoading(true)
-    setTest(0)
     // call contract funciton addVote
-    console.log('id',id)
-    contract.addVote({ resourceId: id, voter: currentUser.accountId, value: 1});
+    const vote = await contract.addVote({ resourceId: id, voter: currentUser.accountId, value: 1})
+    .then(() => {
+      setVoted(0)
+    })
+    .catch(error => {
+      console.log('error', error)
+      setCreated(false)
+      notify()
+      setVoteCount(voteCount);
+    });
+    console.log('vote', vote)
   }
 
-  function handleDonation() {
-    // Increment vote count by 1
-    // call contract funciton addVote
-    contract.addDonation({ resourceId: id}, ATTACHED_GAS, 
-    Big({donation}.donation).times(10 ** 24).toFixed());
+  const handleDonation = async () => {
+    // call contract funciton addDonation
+    const donation = await contract.addDonation({ resourceId: id}, ATTACHED_GAS, 
+    Big({donated}.donated).times(10 ** 24).toFixed());
+    console.log('donation', donation)
   }
-  
+
+  const notify = () => {
+    toast.error("You can't vote your own resource!", {
+      theme: "dark",
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+  //const tagColor = ['bg-red-300', 'bg-blue-500', 'bg-yellow-600']
+
   return (
     <>
       <div className="max-w-4xl	p-4">
@@ -45,7 +69,11 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
           <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
           <p className="font-bold	">{creator}</p>
           <a href={url} rel="noreferrer" target="_blank">{url}</a>
-          <p>{category}</p>
+          <div
+            className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full"
+          >
+            {category}
+          </div>
           {/* <p>
             <input type="checkbox" checked={checked} onChange={complete} />
             {task}
@@ -62,18 +90,18 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
               //defaultValue={'0'}
               autoFocus
               id="donation"
-              className="shadow appearance-none border rounded w-1/5 py-2 px-4 ml-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-1/5 py-2 px-3 ml-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               max={currentUser.balance}
               min="0"
               step="0.01"
               type="number"
-              value={donation}
-              onChange={({ target }) => setDonation(target.value)}
+              value={donated}
+              onChange={({ target }) => setDonated(target.value)}
             />
             <span title="NEAR Tokens" className="pl-2">Ⓝ</span>
             <button 
               onClick={handleDonation}
-              className="shadow bg-blue-700 hover:bg-blue-800 focus:shadow-outline focus:outline-none text-white font-bold mt-3 ml-3 py-2 px-4 rounded">Donate
+              className="shadow bg-blue-700 hover:bg-blue-800 focus:shadow-outline focus:outline-none text-white font-bold mt-3 ml-3 py-2 px-4 text-base rounded">Donate
             </button>
           </div>
         
@@ -82,7 +110,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
               onClick={handleClick}
               onMouseOver={() => setOver(true)}
               onMouseLeave={() => setOver(false)}
-              className={test ? "disabled:opacity-50 " : "text-blue-700"}
+              className={voted ? "disabled:opacity-50 " : "text-blue-700"}
               disabled = {loading}
             >
               <FontAwesomeIcon 
@@ -95,6 +123,24 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
             <p>{voteCount}</p>
           </div>
         </div>
+
+        {created ? "" :
+          <div>
+            <p className={created ? "invisible" : "visible"}></p>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover 
+            
+            />
+          </div>
+        }
       </div>
     </>
   );

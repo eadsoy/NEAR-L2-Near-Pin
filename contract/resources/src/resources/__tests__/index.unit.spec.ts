@@ -1,5 +1,5 @@
-import { Resource, Donation, resources, donations } from "../assembly/models";
-import { addResource, getResources, addVote, addDonation } from "../assembly/index"
+import { Resource, Donation, resources, donations, categories } from "../assembly/models";
+import { addResource, getResources, addVote, addDonation, getCategories } from "../assembly/index"
 import { Context, u128 } from 'near-sdk-core';
 import { VMContext } from "near-mock-vm";
 
@@ -9,9 +9,9 @@ const secondMockAccount = "secondmockaccount2.testnet"
 let resource: Resource;
 let donation: Donation;
 
-let title = "test res-0"
-let url = "https://www.test-resource.com"
-let category = "Test Category"
+let title = "Resource-0"
+let url = "https://www.great-resource.com"
+let category = "Category-0"
 
 
 describe("Resource Tests", () => {
@@ -31,7 +31,7 @@ describe("Resource Tests", () => {
     );
     expect(resources[0]).toStrictEqual(
       resource,
-      'resource should have title: "test res-0", url: "https://www.test-ressource.com", category: "Test Category"'
+      'resource should have title: "Resource-0", url: "https://www.test-ressource.com", category: "Category-0"'
     );
   });
 
@@ -41,8 +41,9 @@ describe("Resource Tests", () => {
     addResource(title, url, category);
 
     // create another resource with same account
-    title = "res-1"
-    let anotherUrl = "https://www.anotherurl.com"
+    title = "Resource-1"
+    let anotherUrl = "https://www.another-url.com"
+
     addResource(title, anotherUrl, category);
 
     expect(resources.length).toBe(
@@ -94,6 +95,53 @@ describe("Resource Tests", () => {
     );
   });
   
+  // If eciistitng category provided, shouldn't create new Category
+  // and shouldn't add it to categories.
+  it('does not create new category if category already exists', () => {
+    // create first reesource
+    addResource(title, url, category);
+
+    // create another resource with same account
+    title = "Resource-2"
+    let anotherUrl = "https://www.anotherurl.com"
+    addResource(title, anotherUrl, category);
+
+    log(categories)
+    log(getCategories())
+
+    expect(categories.length).toBe(
+      1,
+      'should contain one category, no duplicates'
+    );
+    expect(categories[0].category_title).toStrictEqual(
+      category,
+      'category should have title: "some other category"'
+    );
+  });
+
+  // If existing category provided, shouldn't create new Category
+  // and shouldn't add it to categories.
+  it('creates new category if category does not exist', () => {
+    // create first reesource
+    addResource(title, url, category);
+    // create another resource with same account, 
+    // different category and url
+    title = "res-1"
+    let anotherUrl = "https://www.anotherurl.com"
+    let anotherCategory = "Some other Category"
+
+    addResource(title, anotherUrl, anotherCategory);
+
+    expect(categories.length).toBe(
+      2,
+      'should contain two categories'
+    );
+    expect(categories[1].category_title).toStrictEqual(
+      anotherCategory,
+      'category should have title: "some other category"'
+    );
+  });
+
   // Should allow voting for a resource only once
   itThrows('voter can only vote a for a resource once', () => {
     addResource(title, url, category);

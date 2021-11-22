@@ -22,7 +22,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     <>
       { currentUser
           ? <div>
-              <nav className="relative flex flex-wrap items-center justify-between px-2 py-3 bg-white mb-3">
+              <nav className="relative flex flex-wrap items-center justify-between px-2 py-3 bg-white mb-3 shadow-sm">
                 <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
                   <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
                     <a
@@ -60,11 +60,20 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
               <ResourceList contract={contract} currentUser={currentUser}/>
             </div>
           : 
-          <div>
-            <h1>NEAR Resources</h1>
-            Sign In To Use The App: 
-            {" "}
-            <button onClick={signIn} className="shadow bg-blue-600 hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 rounded">Log in</button>
+          <div className="flex flex-col m-6 p-6 flex items-center justify-center">
+            <div
+              className="text-3xl text-center font-bold leading-relaxed inline-block mr-4 py-2 m-6 p-6 pt-6 mt-6 whitespace-nowrap uppercase text-black"
+            >
+              NEAR Resources
+            </div>
+            <div className="text-center text-lg p-6 m-6">
+              Sign In To Use The App: 
+              {" "}
+              
+            </div >
+            <div className="text-center">
+              <button onClick={signIn} className="shadow bg-gray-800 hover:bg-gray-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 ml-4 rounded w-36">Log in</button>
+            </div>
           </div>
         }
     </>

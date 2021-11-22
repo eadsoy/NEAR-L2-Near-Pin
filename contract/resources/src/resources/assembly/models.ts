@@ -17,6 +17,10 @@ export class Resource {
 }
 
 @nearBindgen
+export class Category {
+  category_title: string;
+}
+@nearBindgen
 export class Donation {
   amount: Money = Context.attachedDeposit;
   donor: AccountId = Context.predecessor;
@@ -27,3 +31,4 @@ export class Donation {
 export const resources = new PersistentVector<Resource>("r")
 export const donations = new PersistentVector<Donation>("d");
 export const urls = new PersistentSet<String>("u");
+export const categories = new PersistentVector<Category>("c");

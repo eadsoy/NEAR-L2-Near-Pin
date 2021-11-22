@@ -21,10 +21,9 @@ const ResourceList = ({ contract, currentUser}) => {
     // update the list of todos by invoking the getResources
     // method on the smart contract
     const id = setInterval(() => {
-      
       contract
         .getResources({ offset, limit: PER_PAGE_LIMIT })
-        .then((resources) => {console.log(resources);setResources(resources)});
+        .then((resources) => {console.log(resources);setResources(resources)})
     }, 1000);
 
     return () => clearInterval(id);
@@ -32,12 +31,11 @@ const ResourceList = ({ contract, currentUser}) => {
 
   return (
     <ul>
-      {resources.reverse().map((resource, index) => (
+      {resources.map((resource, index) => (
         <li key={index}>
           <Resource id={index} contract={contract} {...resource} currentUser={currentUser}/>
         </li>
       ))}
-
 
       <div className="flex">
         Current Page: {page}

@@ -139,9 +139,9 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
               <label htmlFor="donation">Donations</label>
               {/* <p className="pl-6 ml-3">{total_donations/1e24}<span title="NEAR Tokens" className="pl-2">Ⓝ</span></p> */}
               <div
-                className="ml-6 pl-6 text-s inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-gray-100 text-gray-600 rounded-full"
+                className="ml-6 pl-4 text-s inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-gray-100 text-gray-600 rounded-full"
               >
-                {total_donations/1e24}<span title="NEAR Tokens" className="pl-2">Ⓝ</span>
+               {total_donations/1e24}<span title="NEAR Tokens" className="pl-2">Ⓝ</span>
               </div>
             </div>
           </div>

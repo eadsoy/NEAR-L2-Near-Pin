@@ -92,7 +92,7 @@ export default function Modal({ contract, currentUser }) {
   return (
     <>
     <div className="p-6 ml-5 ">
-      <p className="text-xl text-gray-800 mb-3 ml-5">Did you come across a useful resource lately, <span className="text-gray-700 font-bold ">{ currentUser.accountId }</span>?</p>
+      <p className="text-xl text-gray-800 mb-3 ml-5">Did you come across a useful resource lately, <span className="text-gray-700 font-bold ">{ currentUser.accountId }</span> ?</p>
       <p className="text-xl text-gray-800 mt-1 ml-5 mb-6">Share it with the NEAR community!</p>
       <button
           className="flex justify-end bg-blue-700 text-center text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 ml-5"

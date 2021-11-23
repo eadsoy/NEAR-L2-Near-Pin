@@ -13,7 +13,7 @@ export function addResource(title: string, url: string, category: string): void 
   // url has to be valid
   assert(isValidURL(url), "URL is not valid, must start with valid https://")
   assert(!urls.has(url), "URL already exists")
-
+  
   const existingCategories = getCategories()
 
   if (existingCategories.indexOf(category)) {

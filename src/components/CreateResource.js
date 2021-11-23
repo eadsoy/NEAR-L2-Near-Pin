@@ -27,7 +27,6 @@ export default function Modal({ contract, currentUser }) {
       setLoading(false);
       setCreated(false)
       notify()
-      notify('success')
     } else {
       setCreated(true)
       const resource = await contract.addResource({ title, category, url, accountId: currentUser.accountId})
@@ -37,15 +36,18 @@ export default function Modal({ contract, currentUser }) {
         setCategory("");
         setLoading(false);
         setShowModal(false);
-        notify('success')
-        // print the resource to the console
-        console.log('my resource', resource);
+        setCreated(false)
+        notify('resource added')
       })
       .catch(error => {
         console.log('error', error)
         setCreated(false)
       });
+
+      // print the resource to the console
+      console.log('my resource', resource);
     }
+    
   }
 
   /// fetch categories
@@ -73,7 +75,7 @@ export default function Modal({ contract, currentUser }) {
         progress: undefined,
       });
       break;
-      case 'success':
+      case 'resource added':
         toast.success('Resource successfully added!', {
           icon: "🚀",
           position: "bottom-right",

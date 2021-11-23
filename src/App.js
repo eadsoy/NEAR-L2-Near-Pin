@@ -10,7 +10,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const signIn = () => {
     wallet.requestSignIn(
       nearConfig.contractName,
-      'NEAR Resources'
+      'NEAR Pin'
     );
   };
 
@@ -41,7 +41,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
                       <i className="fas fa-bars"></i>
                     </button>
                   </div>
-                  <p className="text-2xl font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-gray-800 ">RESOURCES</p>
+                  <p className="text-2xl font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-gray-800 ">Pin</p>
                   <div
                     className={
                       "lg:flex flex-grow items-center" +
@@ -68,7 +68,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
               className="text-5xl text-center font-bold leading-relaxed inline-block  whitespace-nowrap uppercase text-black "
             >
               <img src={logo} alt="Logo" className="object-scale-down h-20 w-full pb-1"/>
-              Resources
+              Pin
             </div>
             <div className="text-center text-lg pt-6">
               Sign In To Use The App 

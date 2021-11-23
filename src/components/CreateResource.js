@@ -35,9 +35,9 @@ export default function Modal({ contract, currentUser }) {
         setUrl("");
         setCategory("");
         setLoading(false);
-        setShowModal(false);
         setCreated(false)
         notify('resource added')
+        setTimeout(function(){ setShowModal(false); }, 3000);
       })
       .catch(error => {
         console.log('error', error)

@@ -20,6 +20,7 @@ export class Resource {
 export class Category {
   category_title: string;
 }
+
 @nearBindgen
 export class Donation {
   amount: Money = Context.attachedDeposit;

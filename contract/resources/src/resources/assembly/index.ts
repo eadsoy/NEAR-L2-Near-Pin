@@ -153,5 +153,5 @@ function isValidURL(url: string): bool {
 }
 
 function isEmptyString(strValue: string): bool{
-  return (strValue === "")
+  return (!!strValue)
 }

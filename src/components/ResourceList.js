@@ -35,7 +35,7 @@ const ResourceList = ({ contract, currentUser}) => {
         <li key={index} className="pl-6 ml-6 mt-6 pt-6">
           <Resource id={index} contract={contract} {...resource} currentUser={currentUser}/>
         </li>
-      ))}
+      )).reverse()}
 
       <div className="flex">
         Current Page: {page}

@@ -1,4 +1,4 @@
-import { AccountId, Money, Timestamp } from "../../utils";
+import { AccountId, Money, Timestamp } from "../utils";
 import { Context, u128, PersistentSet, PersistentVector } from "near-sdk-core"
 
 @nearBindgen
@@ -27,7 +27,6 @@ export class Donation {
   donor: AccountId = Context.predecessor;
   created_at: Timestamp = Context.blockTimestamp;
 }
-
 
 export const resources = new PersistentVector<Resource>("r")
 export const donations = new PersistentVector<Donation>("d");

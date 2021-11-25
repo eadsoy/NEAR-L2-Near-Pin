@@ -44,7 +44,7 @@ near call $CONTRACT addVote '{"resourceId": 0}' --accountId your-account-id.test
 `addDonation(): void`
 
 ```sh
-near call $CONTRACT addVote '{"resourceId": 0}' --accountId <your-account-id.testnet> --amount 2
+near call $CONTRACT addDonation '{"resourceId": 0}' --accountId your-account-id.testnet --amount 2
 ```
 ## Run Tests
 ```

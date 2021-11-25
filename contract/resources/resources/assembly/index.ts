@@ -1,10 +1,16 @@
 import { Context, logging, u128} from "near-sdk-core"
 import { Resource, Donation, Category, resources, donations, urls, categories} from "./models"
-import { PAGE_SIZE } from "../../utils"
+import { PAGE_SIZE } from "../utils"
 
 // ____________________________________________________
 // ___________________ add resource ___________________
 // ____________________________________________________
+/**
+ * 
+ * @param title 
+ * @param url 
+ * @param category 
+ */
 export function addResource(title: string, url: string, category: string): void {
   // url, title. category can't be empty
   assert(isEmptyString(title), "title can't be empty")
@@ -74,10 +80,14 @@ export function getCategories(): string[] {
 // ____________________________________________________
 // ______________ add vote to a resource ______________
 // ____________________________________________________
+/**
+ * 
+ * @param resourceId 
+ */
 export function addVote(resourceId: i32 ): void {
   // assert resourceId
   assert(resourceId >= 0, "resourceId must be bigger than 0");
-	assert(resourceId < resources.length, "resourceId must be valid");
+  assert(resourceId < resources.length, "resourceId must be valid");
 
   // get resource with resourceId
   const resource = resources[resourceId];
@@ -109,7 +119,7 @@ export function addVote(resourceId: i32 ): void {
  */
 export function addDonation(resourceId: i32): void {
   assert(resourceId >= 0, "resourceId must be bigger than 0");
-	assert(resourceId < resources.length, "resourceId must be valid");
+  assert(resourceId < resources.length, "resourceId must be valid");
 
   const resource = resources[resourceId];
 
@@ -152,6 +162,14 @@ function isValidURL(url: string): bool {
   return url.startsWith("https://")
 }
 
+// __________________________________________
+// _________ validate required args _________
+// __________________________________________
+/**
+ * 
+ * @param strValue 
+ * @returns bool
+ */
 function isEmptyString(strValue: string): bool{
   return (!!strValue)
 }

@@ -55,7 +55,9 @@ describe("Resource Tests", () => {
   // Should retrieve all resources
   it('retrieves resources', () => {
     addResource(title, url, category);
+
     const resourcesArr = getResources();
+
     expect(resourcesArr.length).toBe(
       1,
       'should be one resource'
@@ -124,6 +126,7 @@ describe("Resource Tests", () => {
   it('creates new category if category does not exist', () => {
     // create first reesource
     addResource(title, url, category);
+    
     // create another resource with same account, 
     // different category and url
     title = "res-1"

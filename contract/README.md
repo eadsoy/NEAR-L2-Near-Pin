@@ -21,7 +21,7 @@ near dev-deploy ./build/release/resources.wasm
 `addResource(): void`
 
 ```sh
-near call $CONTRACT addResource '{"title":"res-0","url":"https://url-0.com","category":"new category-0"}' --accountId <your-account-id.testnet>
+near call $CONTRACT addResource '{"title":"res-0","url":"https://url-0.com","category":["new category-0", "new category-1"]}' --accountId <your-account-id.testnet>
 ```
 
 **View all resources**

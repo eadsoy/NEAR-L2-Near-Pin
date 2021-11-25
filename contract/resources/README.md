@@ -21,23 +21,23 @@ near dev-deploy ./build/release/resources.wasm
 `addResource(): void`
 
 ```sh
-near call $CONTRACT addResource '{"title":"res-0","url":"https://url-0.com","category":"new category-0"}' --accountId your-account-id.testnet
+near call $CONTRACT addResource '{"title":"res-0","url":"https://url-0.com","category":"new category-0"}' --accountId <your-account-id.testnet>
 ```
 
 **View all resources**
 
 ```sh
-near view $CONTRACT getResources --accountId your-account-id.testnet
+near view $CONTRACT getResources --accountId <your-account-id.testnet>
 ```
 **View all categories**
 ```sh
-near view $CONTRACT getCategories --accountId your-account-id.testnet
+near view $CONTRACT getCategories --accountId <your-account-id.testnet>
 ```
 **Upvote a resource**
 `addVote(): void`
 
 ```sh
-near call $CONTRACT addVote '{"resourceId": 0}' --accountId your-account-id.testnet
+near call $CONTRACT addVote '{"resourceId": 0}' --accountId <your-account-id.testnet>
 
 ```
 **Donate to a resource creator and say thanks**

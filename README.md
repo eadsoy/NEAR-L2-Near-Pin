@@ -3,13 +3,17 @@ Exploring The Code
 
 1. The "backend" code lives in the `/contract/resources` folder. See the README there for
    more info.
-2. The frontend code lives in the `/src` folder. .
+2. The frontend code lives in the `/src` folder.
 3. Tests: You can test the smart contract by running`yarn test`.
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
+
+Install dependencies
+
+### `yarn`
 
 In the project directory, you can run:
 

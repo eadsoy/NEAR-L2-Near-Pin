@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CreatableSelect from 'react-select/creatable';
 
 export default function Modal({ contract, currentUser }) {
   // show/hide modal
@@ -8,22 +9,28 @@ export default function Modal({ contract, currentUser }) {
   // set resource fields
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState([]);
   // set disabled attr
   const [loading, setLoading] = useState(false);
   // set categories array
   const [categories, setCategories] = useState([]);
-  // show category input field if user doesn't select from dropdown
-  const [categoryField, setCategoryField] = useState(false)
   // notifications
   const [created, setCreated] = useState(true);
 
+console.log('CATEGORY', category)
+  const handleChange =(newValue) => {
+    let selected = []
+    newValue.forEach((i) => {
+      selected.push(i.value)
+    })
+    setCategory(selected)    
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     // invoke the smart contract's addResource method
-    if (category === "" || title === null || url === null){
+    if (category.length === 0 || title === null || url === null){
       setLoading(false);
       setCreated(false)
       notify()
@@ -132,7 +139,7 @@ export default function Modal({ contract, currentUser }) {
                   <p className="text-xl font-bold text-gray-800">Please fill out all fields with the correct information.</p>
 
                     <div className="highlight max-w-sm pt-6">
-                      <label htmlFor="title" className="block tracking-wide text-gray-700 text-sm font-bold mb-2">Resource Title</label>
+                      <label htmlFor="title" className="block tracking-wide text-gray-700 text-m font-bold mb-2">Resource Title</label>
                       <input
                         autoComplete="off"
                         autoFocus
@@ -145,7 +152,7 @@ export default function Modal({ contract, currentUser }) {
                       />
                     </div>
                     <div className="highlight max-w-sm">
-                      <label htmlFor="url" className="block tracking-wide text-gray-700 text-sm font-bold mb-2 mt-5">Resource URL</label>
+                      <label htmlFor="url" className="block tracking-wide text-gray-700 text-m font-bold mb-2 mt-5">Resource URL</label>
                       <input
                         autoComplete="off"
                         autoFocus
@@ -157,53 +164,17 @@ export default function Modal({ contract, currentUser }) {
                       />
                     </div>
                     <div className="highlight max-w-sm pt-6 mb-4">
-                      <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
-
-                      <p className="text-xs mb-4">To add a new category select <strong>-- ADD NEW CATEGORY --</strong></p>
-                      <div className="relative w-2/3	"> 
-                        <select 
-                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
-                        id="grid-state"
-                        value={category}
-                        onChange={({ target }) => {setCategory(target.value); if(target.value === ""){setCategoryField(true)} else {setCategoryField(false)}}}
-                        >
-                          <option value="" disabled defaultValue="selected">Select your option</option>
-                          <option
-                            value=""
-                            className="font-bold text-red-700"
-                          >-- ADD NEW CATEGORY --
-                          </option>
-
-                          {categories.map((individualCategory, index) => (
-                            <option 
-                            key={index} 
-                            id={index}
-                            value={individualCategory}
-                            > 
-                              {individualCategory} 
-                            </option>
-                          ))}
-
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
-                      </div>
-
-                      {categoryField ? (
-                        <>
-                          <input
-                            autoComplete="off"
-                            autoFocus
-                            placeholder="Add new category"
-                            id="category"
-                            value={category}
-                            onChange={({ target }) => setCategory(target.value)}
-                            className="shadow appearance-none border rounded w-full mt-3 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          />
-                        </>
-                      ) : null}
-                      
+                      <label htmlFor="category" className="block text-gray-700 text-m font-bold mb-2">Category:</label>
+                      <p className="text-s mb-4">You can select from list and/ or type in category to create a new one. You can submit 3 categories max. </p>
+              
+                        <CreatableSelect
+                          isClearable
+                          isMulti
+                          //onChange={(options) => (setCategory(options.forEach(i  => { return i.value})))}
+                          onChange={handleChange}
+                          options={categories.map((category) => ({value: category, label: category}))}
+                          placeholder="Choose a category and/ or create new one"
+                        />
                     </div>
                     <button type="submit" disabled={loading} className="shadow bg-blue-700 hover:bg-blue-800 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 rounded">
                       Submit
@@ -222,7 +193,6 @@ export default function Modal({ contract, currentUser }) {
                       setUrl("");
                       setCategory("");
                       setLoading(false);
-                      setCategoryField(false)
                     }}
                   >
                     Close

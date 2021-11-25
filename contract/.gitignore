@@ -1,6 +1,6 @@
-./node_modules/
-./build/
-./out/
+node_modules/
+build/
+out/
 
 .DS_Store
 
@@ -9,4 +9,4 @@
 
 .vscode
 
-./neardev/
+neardev/

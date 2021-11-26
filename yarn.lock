@@ -3484,7 +3484,7 @@ cliui@^6.0.0:
     strip-ansi "^6.0.0"
     wrap-ansi "^6.2.0"
 
-clsx@^1.1.1:
+clsx@^1.1.0, clsx@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/clsx/-/clsx-1.1.1.tgz"
   integrity sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==
@@ -9320,7 +9320,7 @@ prompts@2.4.0, prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.0, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9648,6 +9648,14 @@ react-select@^5.2.1:
     memoize-one "^5.0.0"
     prop-types "^15.6.0"
     react-transition-group "^4.3.0"
+
+react-tabs@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/react-tabs/-/react-tabs-3.2.3.tgz#ccbb3e1241ad3f601047305c75db661239977f2f"
+  integrity sha512-jx325RhRVnS9DdFbeF511z0T0WEqEoMl1uCE3LoZ6VaZZm7ytatxbum0B8bCTmaiV0KsU+4TtLGTGevCic7SWg==
+  dependencies:
+    clsx "^1.1.0"
+    prop-types "^15.5.0"
 
 react-toastify@^8.1.0:
   version "8.1.0"

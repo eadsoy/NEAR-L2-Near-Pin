@@ -13,7 +13,7 @@ const ResourceList = ({ contract, currentUser}) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [totalPageCount, setTotalPageCount] = useState([])
-
+  const [resourceCount, setResourceCount] = useState(0)
   // const handleSort = () => {
   //   let sortedResources = resources.sort(function compare(a, b){
   //     return b.vote_score - a.vote_score; 
@@ -21,16 +21,21 @@ const ResourceList = ({ contract, currentUser}) => {
   //   setSortedResources(sortedResources)
   // }
   //('totalPageCount', totalPageCount)
-
+  console.log('resourceCocunt start', resourceCount)
   useEffect(() => {
     let offset;
     let sliceOffset;
     if(page === 1) {
       setPage(1);
-      offset = -PER_PAGE_LIMIT;
+      if(resourceCount < PER_PAGE_LIMIT) {
+        offset = resourceCount;
+      } else {
+        offset = resourceCount - PER_PAGE_LIMIT;
+      }
       sliceOffset = 0;
     } else {
-      offset = -(page) * PER_PAGE_LIMIT;
+      offset = resourceCount - (page) * PER_PAGE_LIMIT;
+      
       sliceOffset = (page - 1) * PER_PAGE_LIMIT;
     }
 
@@ -39,7 +44,7 @@ const ResourceList = ({ contract, currentUser}) => {
     // method on the smart contract
     const id = setInterval(() => {
        contract
-        .getResourcesByRange({ startIndex: offset, endIndex: offset + PER_PAGE_LIMIT})
+        .getResourcesByRange({ startIndex: offset < 0 ? 0 : offset, endIndex: offset + PER_PAGE_LIMIT})
         .then((resources) => { 
           if (resources.length < 10) {
             setLoading(true)
@@ -47,6 +52,9 @@ const ResourceList = ({ contract, currentUser}) => {
           } else {
             setLoading(false)
             setResources(resources);
+            console.log('startIndex', offset)
+            console.log('endIndex', offset + PER_PAGE_LIMIT)
+            console.log('resources', resources)
           }
         })
     }, 1000);
@@ -57,7 +65,6 @@ const ResourceList = ({ contract, currentUser}) => {
         .then((resources) => { 
           let sortedResources = resources.slice(sliceOffset, sliceOffset + PER_PAGE_LIMIT)
           setSortedResources(sortedResources) 
-          console.log('sortedResources', sortedResources)
           })
     }, 1000);
     
@@ -67,11 +74,12 @@ const ResourceList = ({ contract, currentUser}) => {
        .getResourceCount()
        .then((resourceCount) => { 
          setTotalPageCount(Array.from({length: Math.ceil(resourceCount / PER_PAGE_LIMIT)},(v,k)=>k+1))
+         setResourceCount(resourceCount)
          })
    }, 1000);
 
     return () => {clearInterval(id);clearInterval(idSorted);clearInterval(totalResources)}
-  }, [page, contract]);
+  }, [page, contract, resourceCount]);
 
   return (
     <>

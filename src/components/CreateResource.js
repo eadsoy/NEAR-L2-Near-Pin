@@ -53,7 +53,6 @@ export default function Modal({ contract, currentUser }) {
       // print the resource to the console
       console.log('my resource', resource);
     }
-    
   }
 
   /// fetch categories

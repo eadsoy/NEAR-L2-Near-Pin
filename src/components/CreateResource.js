@@ -17,7 +17,6 @@ export default function Modal({ contract, currentUser }) {
   // notifications
   const [created, setCreated] = useState(true);
 
-console.log('CATEGORY', category)
   const handleChange =(newValue) => {
     let selected = []
     newValue.forEach((i) => {
@@ -62,7 +61,7 @@ console.log('CATEGORY', category)
     const categoryId = setInterval(() => {
       contract
         .getCategories()
-        .then((categories) => {console.log(categories);setCategories(categories)})
+        .then((categories) => {setCategories(categories)})
     }, 1000);
 
     return () => clearInterval(categoryId);
@@ -120,7 +119,7 @@ console.log('CATEGORY', category)
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}
                 <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
-                  <h3 className="text-3xl font-semibold">
+                  <h3 className="pt-6 mt-6 text-3xl font-semibold">
                     Add New Resource
                   </h3>
                   <button
@@ -137,7 +136,6 @@ console.log('CATEGORY', category)
                 <form onSubmit={handleSubmit} className="w-full rounded px-8 pt-6 pb-8 mb-4">
                   <fieldset id="fieldset">
                   <p className="text-xl font-bold text-gray-800">Please fill out all fields with the correct information.</p>
-
                     <div className="highlight max-w-sm pt-6">
                       <label htmlFor="title" className="block tracking-wide text-gray-700 text-m font-bold mb-2">Resource Title</label>
                       <input
@@ -166,7 +164,6 @@ console.log('CATEGORY', category)
                     <div className="highlight max-w-sm pt-6 mb-4">
                       <label htmlFor="category" className="block text-gray-700 text-m font-bold mb-2">Category:</label>
                       <p className="text-s mb-4">You can select from list and/ or type in category to create a new one. You can submit 3 categories max. </p>
-              
                         <CreatableSelect
                           isClearable
                           isMulti
@@ -219,8 +216,6 @@ console.log('CATEGORY', category)
           </div>
         }
         </>
-
-        
       ) : null}
     </>
   );

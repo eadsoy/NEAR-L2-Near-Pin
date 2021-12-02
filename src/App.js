@@ -7,6 +7,7 @@ import logo from './near_logo.png'
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const [navbarOpen, setNavbarOpen] = React.useState(false);
+
   const signIn = () => {
     wallet.requestSignIn(
       nearConfig.contractName,
@@ -45,7 +46,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
                   <div
                     className={
                       "lg:flex flex-grow items-center" +
-                      (navbarOpen ? " flex" : " hidden")
+                      (navbarOpen ? "flex" : "hidden")
                     }
                     id="example-navbar-danger"
                   >
@@ -54,11 +55,11 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
                         Account ID: {currentUser.accountId}{" "}
                         <button onClick={signOut} className="shadow bg-gray-800 hover:bg-gray-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 ml-4 rounded">Log out</button>
                       </li>
-
                     </ul>
                   </div>
                 </div>
               </nav>
+              
               <CreateResource contract={contract} currentUser={currentUser}/>
               <ResourceList contract={contract} currentUser={currentUser}/>
             </div>
@@ -73,13 +74,12 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
             <div className="text-center text-lg pt-6">
               Sign In To Use The App 
               {" "}
-              
             </div>
             <div className="text-center">
-              <button onClick={signIn} className="shadow bg-gray-800 hover:bg-gray-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4  rounded w-36">Log in</button>
+              <button onClick={signIn} className="shadow bg-gray-800 hover:bg-gray-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4  rounded w-36">
+                Log in
+              </button>
             </div>
-            
-
           </div>
         }
     </>

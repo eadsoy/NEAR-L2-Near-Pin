@@ -1,11 +1,15 @@
 import { useState } from "react";
-// get our fontawesome imports
-import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
+// Fontawesome imports
+// https://fontawesome.com/v5.15/how-to-use/on-the-web/using-with/react
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
+// Big.js imports
+// https://github.com/MikeMcl/big.js/
 import Big from 'big.js';
+// React toastify imports 
+// https://github.com/fkhadra/react-toastify
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 const ATTACHED_GAS = Big(3).times(10 ** 13).toFixed();
 
@@ -14,7 +18,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   const [voted, setVoted] = useState(votes.indexOf(currentUser.accountId) === -1 ? -1 : 0)
   // button hover
   const [over, setOver] = useState(false);
-  //button clicked
+  // button clicked
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(true);
   // vote count
@@ -22,11 +26,11 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   const [donated, setDonated] = useState("");
   
   const handleClick = async (event) => {
-    // Increment vote count by 1
+    // increment vote count by 1
     console.log('id',id)
     setVoteCount(voteCount + 1);
     setLoading(true)
-    // call contract funciton addVote
+    // call contract function addVote
     const vote = await contract.addVote({ resourceId: id, voter: currentUser.accountId, value: 1})
     .then(() => {
       setVoted(0)
@@ -43,7 +47,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   }
 
   const handleDonation = async () => {
-    // call contract funciton addDonation
+    // call contract function addDonation
     const donation = await contract.addDonation({ resourceId: id }, ATTACHED_GAS, 
     Big({donated}.donated).times(10 ** 24).toFixed());
     console.log('donation', donation)
@@ -77,11 +81,9 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
       break;
     }
   }
-  //const tagColor = ['bg-red-300', 'bg-blue-500', 'bg-yellow-600']
 
   return (
     <>
-    
       <div className="max-w-3xl	p-4">
         <div className="p-8 bg-white rounded shadow-xl relative">
           <div className="flex flex-row">
@@ -102,12 +104,10 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
                   icon={faCaretUp} 
                   size="3x" 
                   className={over ? "text-blue-700" : "" }
-                  //style={over ? { color: "#505050" } : {} }
                 />
               </button>
               <p>{voteCount}</p>
             </div>
-            
           </div>
           <p className="font-bold	pt-1 mb-5 text-gray-500"><span className="text-xs pr-2">Added by </span>{creator}</p>
           <a href={url} rel="noreferrer" target="_blank" className="text-lg font-bold text-blue-800 pt-6 mt-6 mb-6 pb-6">{url}</a>
@@ -120,7 +120,6 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
               <label htmlFor="donation">Say thanks to {creator}</label>
               <input
                 autoComplete="off"
-                //defaultValue={'0'}
                 autoFocus
                 id="donation"
                 className="shadow appearance-none border rounded w-1/5 py-2 px-2 ml-6 pl-6 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -149,9 +148,6 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
             </div>
           </div>
         </div>
-   
-        
-
         {created ? "" :
           <div>
             <p className={created ? "invisible" : "visible"}></p>
@@ -172,5 +168,3 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     </>
   );
 }
-
-

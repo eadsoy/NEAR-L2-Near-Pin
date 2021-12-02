@@ -1,5 +1,5 @@
 import { Resource, Donation, resources, donations, categories } from "../assembly/models";
-import { addResource, getResources, addVote, addDonation, getCategories } from "../assembly/index"
+import { addResource, getResources, addVote, addDonation, getCategories, getResourcesByRange } from "../assembly/index"
 import { Context, u128 } from 'near-sdk-core';
 import { VMContext } from "near-mock-vm";
 
@@ -11,7 +11,7 @@ let donation: Donation;
 
 let title = "Resource-0"
 let url = "https://www.great-resource.com"
-let category = "Category-0"
+let category = ["Category-0"]
 
 
 describe("Resource Tests", () => {
@@ -68,28 +68,28 @@ describe("Resource Tests", () => {
     );
   });
 
-  it('only show the last 10 resources', ()  => {
+  it('only show the last 3 resources', ()  => {
     addResource(title, url, category);
 
     const newResources: Resource[] = [];
 
-    for(let i: i32 = 0; i < 10; i++) {
+    for(let i: i32 = 0; i < 3; i++) {
       const url = 'https://www.someurl' + i.toString() + '.com';
       const title = 'res-' + i.toString();
-      const category = 'test category'
+      const category = ['test category']
 
       newResources.push(new Resource(title, url, category));
 
       addResource(title, url, category);
     }
+  
+    const resources = getResourcesByRange(1, 4);
 
-    const resources = getResources();
+    log(resources);
 
-    log(resources.slice(7, 10));
-    
     expect(resources).toStrictEqual(
       newResources,
-      'should be the last ten resources'
+      'should be the last three resources'
     );
     expect(resources).not.toIncludeEqual(
       resource,
@@ -106,18 +106,24 @@ describe("Resource Tests", () => {
     // create another resource with same account
     title = "Resource-2"
     let anotherUrl = "https://www.anotherurl.com"
-    addResource(title, anotherUrl, category);
+    // use existing category and a new one
+    let otherCategories = [`${category}`, "Category-1"]
+    addResource(title, anotherUrl, otherCategories);
 
     log(categories)
     log(getCategories())
 
     expect(categories.length).toBe(
-      1,
-      'should contain one category, no duplicates'
+      2,
+      'should contain two categories, no duplicates'
     );
     expect(categories[0].category_title).toStrictEqual(
-      category,
-      'category should have title: "some other category"'
+      otherCategories[0],
+      'category should have title: "Category-0"'
+    );
+    expect(categories[1].category_title).toStrictEqual(
+      otherCategories[1],
+      'category should have title: "Category-1"'
     );
   });
 
@@ -131,16 +137,17 @@ describe("Resource Tests", () => {
     // different category and url
     title = "res-1"
     let anotherUrl = "https://www.anotherurl.com"
-    let anotherCategory = "Some other Category"
+    let anotherCategory = ["Some other Category"]
 
     addResource(title, anotherUrl, anotherCategory);
-
+    log(categories)
+    log(getCategories())
     expect(categories.length).toBe(
       2,
       'should contain two categories'
     );
     expect(categories[1].category_title).toStrictEqual(
-      anotherCategory,
+      anotherCategory[0],
       'category should have title: "some other category"'
     );
   });
@@ -175,7 +182,7 @@ describe("Resource Tests", () => {
 
   // Shouldn't allow adding resource if 
   // resource with same URL already exists.
-  itThrows('URL already exists and was created byy another account', () => {
+  itThrows('URL already exists and was created by another account', () => {
     addResource(title, url, category);
 
     VMContext.setSigner_account_id(secondMockAccount)

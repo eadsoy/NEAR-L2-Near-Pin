@@ -89,9 +89,9 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
           <div className="flex flex-row">
             <h2 className="text-2xl font-bold text-gray-800 mr-4">{title}</h2>
             {category.map((individualCategory, index) => {
-              return <div key = {index} className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full">{individualCategory}</div>
+              return <div key = {index} className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-purple-200 text-purple-700 rounded-full">{individualCategory}</div>
             })} 
-            {/* <div className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full">{category}</div> */}
+            {/* <div className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-purple-200 text-purple-700 rounded-full">{category}</div> */}
             <div className="absolute top-12 right-2 h-16 w-16 flex flex-col items-center ">
               <button 
                 onClick={handleClick}

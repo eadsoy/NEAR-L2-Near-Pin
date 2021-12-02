@@ -14,14 +14,7 @@ const ResourceList = ({ contract, currentUser}) => {
   const [loading, setLoading] = useState(false);
   const [totalPageCount, setTotalPageCount] = useState([])
   const [resourceCount, setResourceCount] = useState(0)
-  // const handleSort = () => {
-  //   let sortedResources = resources.sort(function compare(a, b){
-  //     return b.vote_score - a.vote_score; 
-  //   })
-  //   setSortedResources(sortedResources)
-  // }
-  //('totalPageCount', totalPageCount)
-  console.log('resourceCocunt start', resourceCount)
+  
   useEffect(() => {
     let offset;
     let sliceOffset;
@@ -52,9 +45,6 @@ const ResourceList = ({ contract, currentUser}) => {
           } else {
             setLoading(false)
             setResources(resources);
-            console.log('startIndex', offset)
-            console.log('endIndex', offset + PER_PAGE_LIMIT)
-            console.log('resources', resources)
           }
         })
     }, 1000);
@@ -73,12 +63,17 @@ const ResourceList = ({ contract, currentUser}) => {
       contract
        .getResourceCount()
        .then((resourceCount) => { 
-         setTotalPageCount(Array.from({length: Math.ceil(resourceCount / PER_PAGE_LIMIT)},(v,k)=>k+1))
+         setTotalPageCount(Array.from({ length: Math.ceil(resourceCount / PER_PAGE_LIMIT) },(v, k) => k + 1))
+
          setResourceCount(resourceCount)
          })
    }, 1000);
 
-    return () => {clearInterval(id);clearInterval(idSorted);clearInterval(totalResources)}
+    return () => {
+      clearInterval(id);
+      clearInterval(idSorted);
+      clearInterval(totalResources)
+    }
   }, [page, contract, resourceCount]);
 
   return (
@@ -96,23 +91,21 @@ const ResourceList = ({ contract, currentUser}) => {
             <nav aria-label="Page navigation">
               <ul className="inline-flex">
                 <li><button className="h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100">Prev</button></li>
+                
                 {totalPageCount.map((index) => {
                   return <li><button key={index} className="h-10 px-5 text-white transition-colors duration-150 bg-indigo-600 focus:shadow-outline" onClick={() => setPage(index)}>{index}</button></li>
                 })}
+
                 <li><button className={loading? "invisible" : "h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page + 1)}>Next</button></li>
               </ul>
             </nav>
 
-            {resources.map((resource, index) => (
+            {resources.map((resource) => (
               <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                <Resource id={resource.resourceId} contract={contract} {...resource} currentUser={currentUser}/>
+                <Resource id={resource.resourceId} contract={contract}{...resource} currentUser={currentUser}/>
               </li>
             )).reverse()}
 
-{/*             
-            <button onClick={() => setPage((page) => page - 1)}>&lt;</button>
-            {" "}
-            <button onClick={() => setPage((page) => page + 1)}>&gt;</button> */}
           </ul>
         </TabPanel>
         <TabPanel>
@@ -130,14 +123,12 @@ const ResourceList = ({ contract, currentUser}) => {
               </ul>
             </nav>
 
-            {sortedResources.map((resource, index) => (
+            {sortedResources.map((resource) => (
               <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
                 <Resource id={resource.resourceId} contract={contract} {...resource} currentUser={currentUser}/>
               </li>
             ))}
-            {/* <button onClick={() => setPage((page) => page - 1)}>down</button>
-            {" "}
-            <button onClick={() => setPage((page) => page + 1)}>up</button> */}
+
           </ul>
         </TabPanel>
       </Tabs>

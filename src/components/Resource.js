@@ -168,5 +168,3 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     </>
   );
 }
-
-

@@ -11,45 +11,66 @@ const ResourceList = ({ contract, currentUser}) => {
   // sort resources by vote_count
   const [sortedResources, setSortedResources] = useState([])
   const [page, setPage] = useState(1);
-  //const [tabIndex, setTabIndex] = useState(0);
-  
+  const [loading, setLoading] = useState(false);
+  const [totalPageCount, setTotalPageCount] = useState([])
 
   // const handleSort = () => {
   //   let sortedResources = resources.sort(function compare(a, b){
   //     return b.vote_score - a.vote_score; 
   //   })
   //   setSortedResources(sortedResources)
-  //   console.log('here tooo')
   // }
+  //('totalPageCount', totalPageCount)
 
   useEffect(() => {
-    let offset; 
+    let offset;
+    let sliceOffset;
     if(page === 1) {
       setPage(1);
-      offset = 0;
+      offset = -PER_PAGE_LIMIT;
+      sliceOffset = 0;
     } else {
-      offset = (page - 1) * PER_PAGE_LIMIT;
+      offset = -(page) * PER_PAGE_LIMIT;
+      sliceOffset = (page - 1) * PER_PAGE_LIMIT;
     }
 
     // every second after the component first mounts
     // update the list of resources by invoking the getResources
     // method on the smart contract
     const id = setInterval(() => {
-      contract
-        .getResourcesByRange({ startIndex: offset, endIndex: offset + PER_PAGE_LIMIT })
-        .then((resources) => { setResources(resources); console.log('sth happening')})
+       contract
+        .getResourcesByRange({ startIndex: offset, endIndex: offset + PER_PAGE_LIMIT})
+        .then((resources) => { 
+          if (resources.length < 10) {
+            setLoading(true)
+            setResources(resources);
+          } else {
+            setLoading(false)
+            setResources(resources);
+          }
+        })
     }, 1000);
 
     const idSorted = setInterval(() => {
-      contract
+       contract
         .sortByVoteCount()
         .then((resources) => { 
-          let sortedResources = resources.slice(offset, offset + PER_PAGE_LIMIT)
-          setSortedResources(sortedResources); 
-          console.log('sth sorted', sortedResources)})
+          let sortedResources = resources.slice(sliceOffset, sliceOffset + PER_PAGE_LIMIT)
+          setSortedResources(sortedResources) 
+          console.log('sortedResources', sortedResources)
+          })
     }, 1000);
     
-    return () => {clearInterval(id);clearInterval(idSorted)}
+    // check resources length and set page count
+    const totalResources = setInterval(() => {
+      contract
+       .getResourceCount()
+       .then((resourceCount) => { 
+         setTotalPageCount(Array.from({length: Math.ceil(resourceCount / PER_PAGE_LIMIT)},(v,k)=>k+1))
+         })
+   }, 1000);
+
+    return () => {clearInterval(id);clearInterval(idSorted);clearInterval(totalResources)}
   }, [page, contract]);
 
   return (
@@ -61,36 +82,54 @@ const ResourceList = ({ contract, currentUser}) => {
         </TabList>
         <TabPanel>
           <ul>
-            {resources.map((resource, index) => (
-              <li key={index} className="pl-6 ml-6 mt-6 pt-6">
-                <Resource id={index} contract={contract} {...resource} currentUser={currentUser}/>
-              </li>
-            )).reverse()}
-
             <div className="flex">
               Current Page: {page}
             </div>
-            
+            <nav aria-label="Page navigation">
+              <ul className="inline-flex">
+                <li><button className="h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100">Prev</button></li>
+                {totalPageCount.map((index) => {
+                  return <li><button key={index} className="h-10 px-5 text-white transition-colors duration-150 bg-indigo-600 focus:shadow-outline" onClick={() => setPage(index)}>{index}</button></li>
+                })}
+                <li><button className={loading? "invisible" : "h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page + 1)}>Next</button></li>
+              </ul>
+            </nav>
+
+            {resources.map((resource, index) => (
+              <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
+                <Resource id={resource.resourceId} contract={contract} {...resource} currentUser={currentUser}/>
+              </li>
+            )).reverse()}
+
+{/*             
             <button onClick={() => setPage((page) => page - 1)}>&lt;</button>
             {" "}
-            <button onClick={() => setPage((page) => page + 1)}>&gt;</button>
+            <button onClick={() => setPage((page) => page + 1)}>&gt;</button> */}
           </ul>
         </TabPanel>
         <TabPanel>
         <ul>
+          <div className="flex">
+            Current Page: {page}
+          </div>
+          <nav aria-label="Page navigation">
+              <ul className="inline-flex">
+                <li><button className="h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100" onClick={() => setPage((page) => page - 1)}>Prev</button></li>
+                {totalPageCount.map((index) => {
+                  return <li><button key={index} className="h-10 px-5 text-white transition-colors duration-150 bg-indigo-600 focus:shadow-outline" onClick={() => setPage(index)}>{index}</button></li>
+                })}
+                <li><button className={loading? "invisible" : "h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page + 1)}>Next</button></li>
+              </ul>
+            </nav>
+
             {sortedResources.map((resource, index) => (
-              <li key={index} className="pl-6 ml-6 mt-6 pt-6">
-                <Resource id={index} contract={contract} {...resource} currentUser={currentUser}/>
+              <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
+                <Resource id={resource.resourceId} contract={contract} {...resource} currentUser={currentUser}/>
               </li>
             ))}
-
-            <div className="flex">
-              Current Page: {page}
-            </div>
-
-            <button onClick={() => setPage((page) => page - 1)}>down</button>
+            {/* <button onClick={() => setPage((page) => page - 1)}>down</button>
             {" "}
-            <button onClick={() => setPage((page) => page + 1)}>up</button>
+            <button onClick={() => setPage((page) => page + 1)}>up</button> */}
           </ul>
         </TabPanel>
       </Tabs>

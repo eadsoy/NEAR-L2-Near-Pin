@@ -90,7 +90,7 @@ const ResourceList = ({ contract, currentUser}) => {
             </div>
             <nav aria-label="Page navigation">
               <ul className="inline-flex">
-                <li><button className="h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100" onClick={() => setPage((page) => page - 1)}>Prev</button></li>
+                <li><button className={page === 1? "invisible" :"h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page - 1)}>Prev</button></li>
                 
                 {totalPageCount.map((index) => {
                   return <li><button key={index} className="h-10 px-5 text-white transition-colors duration-150 bg-indigo-600 focus:shadow-outline" onClick={() => setPage(index)}>{index}</button></li>
@@ -115,7 +115,7 @@ const ResourceList = ({ contract, currentUser}) => {
           </div>
           <nav aria-label="Page navigation">
               <ul className="inline-flex">
-                <li><button className="h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100" onClick={() => setPage((page) => page - 1)}>Prev</button></li>
+                <li><button className={page === 1? "invisible" :"h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page - 1)}>Prev</button></li>
                 {totalPageCount.map((index) => {
                   return <li><button key={index} className="h-10 px-5 text-white transition-colors duration-150 bg-indigo-600 focus:shadow-outline" onClick={() => setPage(index)}>{index}</button></li>
                 })}

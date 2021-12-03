@@ -20,11 +20,12 @@ const ResourceList = ({ contract, currentUser}) => {
     let sliceOffset;
     if(page === 1) {
       setPage(1);
-      if(resourceCount < PER_PAGE_LIMIT) {
-        offset = resourceCount;
-      } else {
-        offset = resourceCount - PER_PAGE_LIMIT;
-      }
+      offset = resourceCount - PER_PAGE_LIMIT;
+      // if(resourceCount < PER_PAGE_LIMIT) {
+      //   offset = resourceCount
+      // } else {
+      //   offset = resourceCount - PER_PAGE_LIMIT;
+      // }
       sliceOffset = 0;
     } else {
       offset = resourceCount - (page) * PER_PAGE_LIMIT;
@@ -64,7 +65,6 @@ const ResourceList = ({ contract, currentUser}) => {
        .getResourceCount()
        .then((resourceCount) => { 
          setTotalPageCount(Array.from({ length: Math.ceil(resourceCount / PER_PAGE_LIMIT) },(v, k) => k + 1))
-
          setResourceCount(resourceCount)
          })
    }, 1000);
@@ -78,7 +78,7 @@ const ResourceList = ({ contract, currentUser}) => {
 
   return (
     <>
-      <Tabs defaultIndex={0} onSelect={() => setPage(1)}>
+      <Tabs defaultIndex={0} onSelect={() => setPage(1)} className="pt-6 mt-6">
         <TabList>
           <Tab>Recent</Tab>
           <Tab>Popular</Tab>
@@ -125,7 +125,7 @@ const ResourceList = ({ contract, currentUser}) => {
 
             {sortedResources.map((resource) => (
               <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                <Resource id={resource.resourceId} contract={contract} {...resource} currentUser={currentUser}/>
+                <Resource id={resource.resourceId} contract={contract}{...resource} currentUser={currentUser}/>
               </li>
             ))}
 

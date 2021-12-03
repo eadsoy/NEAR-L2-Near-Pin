@@ -9,7 +9,8 @@ export class Resource {
   vote_score: i32 = 0;
   total_donations: u128 = u128.Zero;
   votes: Set<string> = new Set<string>();
-
+  bookmarked_by: Set<string> = new Set<string>();
+  
   constructor(
     public title: string,
     public url: string,

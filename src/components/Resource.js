@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ATTACHED_GAS = Big(3).times(10 ** 13).toFixed();
 
-export function Resource({ contract, creator, url, title, category, vote_score, votes, id, currentUser, total_donations }) {
+export function Resource({ contract, creator, url, title, category, vote_score, votes, id, currentUser, total_donations, bookmarked_by}) {
   // check if already voted
   const [voted, setVoted] = useState(votes.indexOf(currentUser.accountId) === -1 ? -1 : 0)
   // button hover
@@ -52,6 +52,13 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     Big({donated}.donated).times(10 ** 24).toFixed());
     console.log('donation', donation)
   }
+
+  // const handleAddBookmark = async () => {
+  //   await contract.addBookmark({ resourceId: id })
+  // }
+  // const handleRemoveBookmark = async () => {
+  //   await contract.removeBookmark({ resourceId: id })
+  // }
 
   const notify = (type) => {
     switch (type) {

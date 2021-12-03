@@ -246,3 +246,35 @@ export function deleteResources(): void {
     resources.pop()
   }
 }
+
+export function addBookmark(resourceId: i32): void {
+  assert(resourceId >= 0, "resourceId must be bigger than 0");
+  assert(resourceId < resources.length, "resourceId must be valid");
+
+  const resource = resources[resourceId]
+
+  resource.bookmarked_by.add(Context.predecessor)
+  resources.replace(resourceId, resource)
+
+  // voter cannot vote twice for same resource
+  assert(!resource.bookmarked_by.has(Context.predecessor), "Already bookmarked!")
+
+  logging.log('resource bookmarked')
+  logging.log(resource)
+}
+
+export function removeBookmark(resourceId: i32): void {
+  assert(resourceId >= 0, "resourceId must be bigger than 0");
+  assert(resourceId < resources.length, "resourceId must be valid");
+
+  const resource = resources[resourceId]
+
+  resource.bookmarked_by.has(Context.predecessor)
+
+  resource.bookmarked_by.delete(Context.predecessor)
+  resources.replace(resourceId, resource)
+  assert(resource.bookmarked_by.has(Context.predecessor), "Resource wasn't bookmarked before")
+  
+  logging.log('bookmark removed')
+  logging.log(resource)
+}

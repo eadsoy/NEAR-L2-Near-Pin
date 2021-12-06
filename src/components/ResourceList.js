@@ -152,7 +152,7 @@ const ResourceList = ({ contract, currentUser}) => {
                       <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
                     </li>
                   ))}
-                  hello
+                  
                   </div>)
                   : 
                   (<div>
@@ -161,7 +161,7 @@ const ResourceList = ({ contract, currentUser}) => {
                       <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
                     </li>
                   )).reverse()}
-                  bye
+                  
                   </div>)
                 }
                 

@@ -105,7 +105,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
             <h2 className="text-2xl font-bold text-gray-800 mr-4">{title}</h2>
 
             {linked_categories.map((categoryIndex, index) => {
-              return <div key ={categoryIndex} className={`ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 safe bg-${allColors[categoryIndex % 9]}-200 text-${allColors[categoryIndex % 9]}-700 rounded-full`}>{category[index]}</div>
+              return <div key ={categoryIndex} className={`ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-${allColors[categoryIndex % 9]}-200 text-${allColors[categoryIndex % 9]}-700 rounded-full`}>{category[index]}</div>
             })} 
  
             <div className="absolute top-12 right-2 h-16 w-16 flex flex-col items-center ">

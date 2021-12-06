@@ -24,8 +24,8 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   // vote count
   const [voteCount, setVoteCount] = useState(vote_score);
   const [donated, setDonated] = useState("");
-  
-  
+  const [bookmarked, setBookmarked] = useState(false)
+
   const handleClick = async (event) => {
     // increment vote count by 1
     console.log('id',id)
@@ -54,12 +54,14 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     console.log('donation', donation)
   }
 
-  // const handleAddBookmark = async () => {
-  //   await contract.addBookmark({ resourceId: id })
-  // }
-  // const handleRemoveBookmark = async () => {
-  //   await contract.removeBookmark({ resourceId: id })
-  // }
+  const handleAddBookmark = async () => {
+    await contract.addBookmark({ resourceId: id })
+    setBookmarked(true)
+  }
+  const handleRemoveBookmark = async () => {
+    await contract.removeBookmark({ resourceId: id })
+    setBookmarked(false)
+  }
 
 
   const allColors = ["blue", "green", "red", "yellow", "purple", "gray", "rose", "teal", "cool-gray"]
@@ -121,14 +123,28 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
                 />
               </button>
               <p>{voteCount}</p>
+              
             </div>
+            <div className="absolute top-0 right-12 h-1 w-2 flex flex-col items-center ">
+            {bookmarked? 
+            <button 
+                onClick={handleRemoveBookmark}
+                className="shadow text-xs bg-purple-800 hover:bg-purple-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 ml-4 rounded"
+                disabled = {loading}
+              >Bookmarked</button> 
+              : 
+              <button 
+                onClick={handleAddBookmark}
+                className="shadow text-xs bg-purple-800 hover:bg-purple-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 ml-4 rounded"
+                disabled = {loading}
+              >Bookmark</button> 
+            }
+            </div>
+
           </div>
           <p className="font-bold	pt-1 mb-5 text-gray-500"><span className="text-xs pr-2">Added by </span>{creator}</p>
           <a href={url} rel="noreferrer" target="_blank" className="text-lg font-bold text-blue-800 pt-6 mt-6 mb-6 pb-6">{url}</a>
-          {/* <p>
-            <input type="checkbox" checked={checked} onChange={complete} />
-            {task}
-          </p> */}  
+           
           <div className="pt-6 text-sm flex flex-row justify-items-center items-center	place-items-center">     
             <div>
               <label htmlFor="donation">Say thanks to {creator}</label>
@@ -160,7 +176,9 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
               </div>
             </div>
           </div>
+          
         </div>
+        
         {created ? "" :
           <div>
             <p className={created ? "invisible" : "visible"}></p>

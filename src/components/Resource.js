@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ATTACHED_GAS = Big(3).times(10 ** 13).toFixed();
 
-export function Resource({ contract, creator, url, title, category, vote_score, votes, id, currentUser, total_donations, bookmarked_by}) {
+export function Resource({ contract, creator, url, title, category, vote_score, votes, id, currentUser, total_donations, bookmarks, linked_categories}) {
   // check if already voted
   const [voted, setVoted] = useState(votes.indexOf(currentUser.accountId) === -1 ? -1 : 0)
   // button hover
@@ -24,6 +24,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   // vote count
   const [voteCount, setVoteCount] = useState(vote_score);
   const [donated, setDonated] = useState("");
+  
   
   const handleClick = async (event) => {
     // increment vote count by 1
@@ -60,6 +61,11 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   //   await contract.removeBookmark({ resourceId: id })
   // }
 
+
+  const allColors = ["blue", "green", "red", "yellow", "purple", "gray", "rose", "teal", "cool-gray"]
+
+
+
   const notify = (type) => {
     switch (type) {
       default:
@@ -95,10 +101,11 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
         <div className="p-8 bg-white rounded shadow-xl relative">
           <div className="flex flex-row">
             <h2 className="text-2xl font-bold text-gray-800 mr-4">{title}</h2>
-            {category.map((individualCategory, index) => {
-              return <div key = {index} className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-purple-200 text-purple-700 rounded-full">{individualCategory}</div>
+
+            {linked_categories.map((categoryIndex, index) => {
+              return <div key ={categoryIndex} className={`ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-${allColors[categoryIndex % 9]}-200 text-${allColors[categoryIndex % 9]}-700 rounded-full`}>{category[index]}</div>
             })} 
-            {/* <div className="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-purple-200 text-purple-700 rounded-full">{category}</div> */}
+ 
             <div className="absolute top-12 right-2 h-16 w-16 flex flex-col items-center ">
               <button 
                 onClick={handleClick}
@@ -127,7 +134,6 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
               <label htmlFor="donation">Say thanks to {creator}</label>
               <input
                 autoComplete="off"
-                autoFocus
                 id="donation"
                 className="shadow appearance-none border rounded w-1/5 py-2 px-2 ml-6 pl-6 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 max={currentUser.balance}

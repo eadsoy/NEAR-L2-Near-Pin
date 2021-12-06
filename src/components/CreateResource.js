@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CreatableSelect from 'react-select/creatable';
+import Big from 'big.js';
+
+const ATTACHED_GAS = Big(3).times(10 ** 13).toFixed();
 
 export default function Modal({ contract, currentUser }) {
   // show/hide modal
@@ -16,7 +19,8 @@ export default function Modal({ contract, currentUser }) {
   const [categories, setCategories] = useState([]);
   // notifications
   const [created, setCreated] = useState(true);
-
+  
+  // const XCC_GAS = 20_000_000_000_000;
   const handleChange =(newValue) => {
     let selected = []
     newValue.forEach((i) => {
@@ -35,7 +39,7 @@ export default function Modal({ contract, currentUser }) {
       notify()
     } else {
       setCreated(true)
-      const resource = await contract.addResource({ title, category, url, accountId: currentUser.accountId})
+      const resource = await contract.addResource({ title, category, url, accountId: currentUser.accountId}, ATTACHED_GAS)
       .then(() => {
         setTitle("");
         setUrl("");
@@ -59,7 +63,7 @@ export default function Modal({ contract, currentUser }) {
   useEffect(() => {
     const categoryId = setInterval(() => {
       contract
-        .getCategories()
+        .getCategoryTitles()
         .then((categories) => {setCategories(categories)})
     }, 1000);
 

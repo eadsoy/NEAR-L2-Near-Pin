@@ -20,14 +20,14 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   const [over, setOver] = useState(false);
   // button clicked
   const [loading, setLoading] = useState(false);
-  const [created, setCreated] = useState(true);
+  // TODO: Handle notifications
+  //const [created, setCreated] = useState(true);
   // vote count
   const [voteCount, setVoteCount] = useState(vote_score);
   const [donated, setDonated] = useState("");
   //const [bookmarked, setBookmarked] = useState(false)
   const [bookmarked, setBookmarked] = useState(bookmarks.indexOf(currentUser.accountId) === -1 ? -1 : 0)
-  console.log('bookmarked', bookmarked)
-  //const [categoryColors, setCategoryColors] = useState([])
+
   const handleClick = async (event) => {
     // increment vote count by 1
     console.log('id',id)
@@ -37,13 +37,13 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     const vote = await contract.addVote({ resourceId: id, voter: currentUser.accountId, value: 1})
     .then(() => {
       setVoted(0)
-      setCreated(false)
+      //setCreated(false)
       notify("success")
     })
     .catch(error => {
       console.log('error', error)
-      setCreated(false)
-      notify('error')
+      notify("error")
+      //setCreated(false)
       setVoteCount(voteCount);
     });
     console.log('vote', vote)
@@ -58,22 +58,19 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
 
   const handleAddBookmark = async () => {
     await contract.addBookmark({ resourceId: id })
-    setBookmarked(0)
+    .then(() => {
+      setBookmarked(0)
+      notify("bookmark added")
+    })
   }
+  
   const handleRemoveBookmark = async () => {
     await contract.removeBookmark({ resourceId: id })
-    setBookmarked(-1)
+    .then(() => {
+      setBookmarked(-1)
+      notify("bookmark removed")
+    })
   }
-
-  // useEffect(() => {
-  //     const bgColors = ["blue", "green", "red", "yellow", "purple", "gray", "rose", "teal", "cool-gray"]
-  //     const colors = []
-  //     linked_categories.forEach((index) => {
-  //       colors.push ({id: index, color: bgColors[index % 9]})
-  //     })
-  //     setCategoryColors(colors)
-    
-  // }, [linked_categories]);
 
   const bgColors = ["bg-blue-200", "bg-green-200", "bg-red-200", "bg-yellow-200", "bg-purple-200", "bg-gray-200", "bg-rose-200", "bg-teal-200", "bg-cool-gray-200"]
   const textColors = ["text-blue-700", "text-green-700", "text-red-700", "text-yellow-700", "text-purple-700", "text-gray-700", "text-rose-700", "text-teal-700", "text-cool-gray-700"]
@@ -96,6 +93,30 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
       case 'success':
         toast.success('Vote submitted!', {
           icon: "🚀",
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+      break;
+      case 'bookmark added':
+        toast.success('Bookmark added! Click the saved tab to see your bookmarks.', {
+          icon: "🚀",
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+      break;
+      case 'bookmark removed':
+        toast.info('Bookmark removed!', {
+          theme: "colored",
           position: "bottom-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -190,7 +211,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
           
         </div>
         
-        {created ? "" :
+        {/* {created ? "" :
           <div>
             <p className={created ? "invisible" : "visible"}></p>
             <ToastContainer
@@ -205,7 +226,23 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
               pauseOnHover 
             />
           </div>
-        }
+        } */}
+
+          <div>
+            <p className= "visible"></p>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover 
+            />
+          </div>
+
       </div>
     </>
   );

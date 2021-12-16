@@ -26,6 +26,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   const [donated, setDonated] = useState("");
   const [bookmarked, setBookmarked] = useState(false)
 
+  //const [categoryColors, setCategoryColors] = useState([])
   const handleClick = async (event) => {
     // increment vote count by 1
     console.log('id',id)
@@ -63,10 +64,19 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
     setBookmarked(false)
   }
 
+  // useEffect(() => {
+  //     const bgColors = ["blue", "green", "red", "yellow", "purple", "gray", "rose", "teal", "cool-gray"]
+  //     const colors = []
+  //     linked_categories.forEach((index) => {
+  //       colors.push ({id: index, color: bgColors[index % 9]})
+  //     })
+  //     setCategoryColors(colors)
+    
+  // }, [linked_categories]);
 
-  const allColors = ["blue", "green", "red", "yellow", "purple", "gray", "rose", "teal", "cool-gray"]
-
-
+  const bgColors = ["bg-blue-200", "bg-green-200", "bg-red-200", "bg-yellow-200", "bg-purple-200", "bg-gray-200", "bg-rose-200", "bg-teal-200", "bg-cool-gray-200"]
+  const textColors = ["text-blue-700", "text-green-700", "text-red-700", "text-yellow-700", "text-purple-700", "text-gray-700", "text-rose-700", "text-teal-700", "text-cool-gray-700"]
+ // console.log("categoryColor", categoryColors)
 
   const notify = (type) => {
     switch (type) {
@@ -105,7 +115,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
             <h2 className="text-2xl font-bold text-gray-800 mr-4">{title}</h2>
 
             {linked_categories.map((categoryIndex, index) => {
-              return <div key ={categoryIndex} className={`ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-${allColors[categoryIndex % 9]}-200 text-${allColors[categoryIndex % 9]}-700 rounded-full`}>{category[index]}</div>
+              return <div key ={categoryIndex} className={`ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 ${bgColors[categoryIndex % 9]} ${textColors[categoryIndex % 9]} rounded-full`}>{category[index]}</div>
             })} 
  
             <div className="absolute top-12 right-2 h-16 w-16 flex flex-col items-center ">

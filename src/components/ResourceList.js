@@ -17,32 +17,48 @@ const ResourceList = ({ contract, currentUser}) => {
   const [resourceCount, setResourceCount] = useState(0)
   const [categories, setCategories] = useState([])
   const [filtered, setFiltered] = useState(false)
+  //TODO: FIX 
   const [checkedState, setCheckedState] = useState(
     new Array(20).fill(false)
   );
-  
-  // useEffect(() => {setCheckedState(Array.from({ length: categories.length },(v, k) => false))}, [categories])
-
-  //console.log('checkedState1', checkedState)
-
+  //const [bookmarks, setBookmarks] = useState([])
   const filter = async ({ target }) => {
-    console.log('checkedState2', checkedState)
     const updatedCheckedState = checkedState.map((item, index) => 
       index === parseInt(target.id,10) ? !item : item
     );
 
-    
     setCheckedState(updatedCheckedState);
-    // console.log('checkedState[parseInt(target.id,10', checkedState[parseInt(target.id,10)])
-    // console.log('target.id', target.id)
+  
+    // console.log('target.id1', target.id)
+    // console.log('updatedCheckedState', updatedCheckedState)
+    const count = updatedCheckedState.filter(checked => checked === true).length
+    // console.log('count', count)
+    // console.log('updatedCheckedState[parseInt(target.id,10)]', updatedCheckedState[parseInt(target.id,10)])
+    let linkedResources;
+    
+    if (count >= 1) {
+      // console.log("filtered.indexOf(true)", checkedState.indexOf(true))
+      if(updatedCheckedState[parseInt(target.id,10)] === true) {
+        setFiltered(true)
+        console.log('target.id', target.id)
+        linkedResources = await contract.getLinkedResources({categoryTitle: target.value})
+        
+        if(count > 1) {
+          console.log('filteredResources2', filteredResources)
+          console.log('linkedResources2', linkedResources)
+          
+          const concatedResources = [...new Set([...linkedResources,...filteredResources])]
+          const allResources = [...new Map(concatedResources.map(item => [JSON.stringify(item), item])).values()];
+          console.log(allResources);
+          
+          setFilteredResources(allResources)
+  
+        } else {
+          setFilteredResources(linkedResources)
+          console.log('linkedResources', linkedResources)
+        }
 
-
-    if(checkedState[parseInt(target.id,10)] === true) {
-      console.log('hello')
-      setFiltered(true)
-      const linkedResources = await contract.getLinkedResources({categoryTitle: target.value})
-      setFilteredResources(linkedResources)
-      console.log('linkedResources', linkedResources)
+      }
     } else {
       setFiltered(false)
     }
@@ -110,11 +126,21 @@ const ResourceList = ({ contract, currentUser}) => {
       })
     }, 1000);
 
+  //   const idBookmarks = setInterval(() => {
+  //     contract
+  //      .getBookmarks({accountId: currentUser.accountId})
+  //      .then((bookmarks) => { 
+  //        console.log('bookmarks', bookmarks)
+  //        setBookmarks(bookmarks)
+  //        })
+  //  }, 1000);
+
     return () => {
       clearInterval(id);
       clearInterval(idSorted);
       clearInterval(totalResources)
       clearInterval(idCategories)
+      //clearInterval(idBookmarks)
     }
   }, [page, contract, resourceCount]);
 
@@ -127,7 +153,7 @@ const ResourceList = ({ contract, currentUser}) => {
             <TabList>
               <Tab>Recent</Tab>
               <Tab>Popular</Tab>
-              <Tab>Filter</Tab>
+              <Tab>Saved</Tab>
             </TabList>
             <TabPanel>
               <ul>
@@ -164,8 +190,43 @@ const ResourceList = ({ contract, currentUser}) => {
                   
                   </div>)
                 }
-                
-                
+              </ul>
+            </TabPanel>
+            <TabPanel>
+            <ul>
+              <div className="flex">
+                Current Page: {page}
+              </div>
+              <nav aria-label="Page navigation">
+                  <ul className="inline-flex">
+                    <li><button className={page === 1? "invisible" :"h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page - 1)}>Prev</button></li>
+                    {totalPageCount.map((index) => {
+                      return <li><button key={index} className="h-10 px-5 text-white transition-colors duration-150 bg-indigo-600 focus:shadow-outline" onClick={() => setPage(index)}>{index}</button></li>
+                    })}
+                    <li><button className={loading? "invisible" : "h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page + 1)}>Next</button></li>
+                  </ul>
+                </nav>
+
+                {filtered ?
+                  (<div>
+                  {filteredResources.map((resource) => (
+                    <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
+                      <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                    </li>
+                  ))}
+                  
+                  </div>)
+                  : 
+                  (<div>
+                    {sortedResources.map((resource) => (
+                      <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
+                        <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                      </li>
+                    ))}
+                  
+                  </div>)
+                }
+
                 
 
               </ul>
@@ -185,37 +246,30 @@ const ResourceList = ({ contract, currentUser}) => {
                   </ul>
                 </nav>
 
-                {sortedResources.map((resource) => (
-                  <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                    <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
-                  </li>
-                ))}
+                {filtered ?
+                  (<div>
+                  {filteredResources.map((resource) => (
+                    <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
+                      <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                    </li>
+                  ))}
+                  
+                  </div>)
+                  : 
+                  (<div>
+                    {sortedResources.map((resource) => (
+                      <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
+                        <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                      </li>
+                    ))}
+                  
+                  </div>)
+                }
+
+                
 
               </ul>
-            </TabPanel>
-            <TabPanel>
-            <ul>
-              <div className="flex">
-                Current Page: {page}
-              </div>
-              <nav aria-label="Page navigation">
-                  <ul className="inline-flex">
-                    <li><button className={page === 1? "invisible" :"h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-l-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page - 1)}>Prev</button></li>
-                    {totalPageCount.map((index) => {
-                      return <li><button key={index} className="h-10 px-5 text-white transition-colors duration-150 bg-indigo-600 focus:shadow-outline" onClick={() => setPage(index)}>{index}</button></li>
-                    })}
-                    <li><button className={loading? "invisible" : "h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page + 1)}>Next</button></li>
-                  </ul>
-                </nav>
-
-                {filteredResources.map((resource) => (
-                  <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                    <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
-                  </li>
-                ))}
-
-              </ul>
-            </TabPanel>
+            </TabPanel>          
           </Tabs>
         </div>
         <div >

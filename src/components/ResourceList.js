@@ -21,7 +21,7 @@ const ResourceList = ({ contract, currentUser}) => {
   const [checkedState, setCheckedState] = useState(
     new Array(20).fill(false)
   );
-  //const [bookmarks, setBookmarks] = useState([])
+  const [bookmarks, setBookmarks] = useState([])
   const filter = async ({ target }) => {
     const updatedCheckedState = checkedState.map((item, index) => 
       index === parseInt(target.id,10) ? !item : item
@@ -126,23 +126,23 @@ const ResourceList = ({ contract, currentUser}) => {
       })
     }, 1000);
 
-  //   const idBookmarks = setInterval(() => {
-  //     contract
-  //      .getBookmarks({accountId: currentUser.accountId})
-  //      .then((bookmarks) => { 
-  //        console.log('bookmarks', bookmarks)
-  //        setBookmarks(bookmarks)
-  //        })
-  //  }, 1000);
+    const idBookmarks = setInterval(() => {
+      contract
+       .getBookmarks({accountId: currentUser.accountId})
+       .then((bookmarks) => { 
+         console.log('bookmarks', bookmarks)
+         setBookmarks(bookmarks)
+         })
+   }, 1000);
 
     return () => {
       clearInterval(id);
       clearInterval(idSorted);
       clearInterval(totalResources)
       clearInterval(idCategories)
-      //clearInterval(idBookmarks)
+      clearInterval(idBookmarks)
     }
-  }, [page, contract, resourceCount]);
+  }, [page, contract, resourceCount, currentUser]);
 
   return (
     <>
@@ -245,8 +245,15 @@ const ResourceList = ({ contract, currentUser}) => {
                     <li><button className={loading? "invisible" : "h-10 px-5 text-indigo-600 transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline hover:bg-indigo-100"} onClick={() => setPage((page) => page + 1)}>Next</button></li>
                   </ul>
                 </nav>
-
-                {filtered ?
+                  <div>
+                    {bookmarks.map((resource) => (
+                      <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
+                        <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                      </li>
+                    ))}
+                  
+                  </div>
+                {/* {filtered ?
                   (<div>
                   {filteredResources.map((resource) => (
                     <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
@@ -264,7 +271,7 @@ const ResourceList = ({ contract, currentUser}) => {
                     ))}
                   
                   </div>)
-                }
+                } */}
 
                 
 

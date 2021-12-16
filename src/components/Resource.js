@@ -24,8 +24,9 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   // vote count
   const [voteCount, setVoteCount] = useState(vote_score);
   const [donated, setDonated] = useState("");
-  const [bookmarked, setBookmarked] = useState(false)
-
+  //const [bookmarked, setBookmarked] = useState(false)
+  const [bookmarked, setBookmarked] = useState(bookmarks.indexOf(currentUser.accountId) === -1 ? -1 : 0)
+  console.log('bookmarked', bookmarked)
   //const [categoryColors, setCategoryColors] = useState([])
   const handleClick = async (event) => {
     // increment vote count by 1
@@ -57,11 +58,11 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
 
   const handleAddBookmark = async () => {
     await contract.addBookmark({ resourceId: id })
-    setBookmarked(true)
+    setBookmarked(0)
   }
   const handleRemoveBookmark = async () => {
     await contract.removeBookmark({ resourceId: id })
-    setBookmarked(false)
+    setBookmarked(-1)
   }
 
   // useEffect(() => {
@@ -137,17 +138,17 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
             </div>
             <div className="absolute top-0 right-12 h-1 w-2 flex flex-col items-center ">
             {bookmarked? 
-            <button 
-                onClick={handleRemoveBookmark}
-                className="shadow text-xs bg-purple-800 hover:bg-purple-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 ml-4 rounded"
-                disabled = {loading}
-              >Bookmarked</button> 
-              : 
               <button 
                 onClick={handleAddBookmark}
                 className="shadow text-xs bg-purple-800 hover:bg-purple-900 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 ml-4 rounded"
                 disabled = {loading}
               >Bookmark</button> 
+              :
+              <button 
+                onClick={handleRemoveBookmark}
+                className="shadow text-xs bg-green-500 hover:bg-green-700 focus:shadow-outline focus:outline-none text-white font-bold mt-3 py-2 px-4 ml-4 rounded"
+                disabled = {loading}
+              >Bookmarked</button> 
             }
             </div>
 

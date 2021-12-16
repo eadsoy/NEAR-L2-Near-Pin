@@ -86,7 +86,7 @@ export function addResource(title: string, url: string, category: string[]): voi
 }
 
 // ___________________________________________________
-// __________________ get all resources __________________
+// ________________ get all resources ________________
 // ___________________________________________________
 /**
  * 
@@ -145,6 +145,8 @@ export function getResourceCount(): i32 {
   return resources.length
 }
 
+////////////////// VOTE FUNCTIONS //////////////////
+
 // _________________________________________________
 // __________ get resources by vote count __________
 // _________________________________________________
@@ -189,6 +191,9 @@ export function addVote(resourceId: i32 ): void {
   logging.log(resource)
 }
 
+
+////////////////// DONATION FUNCTIONS //////////////////
+
 // ____________________________________________________
 // ____________ add donation to a resource ____________
 // ____________________________________________________
@@ -229,6 +234,8 @@ export function getDonationsCount(resourceId: i32): u128 {
   return resource.total_donations
 }
 
+////////////////// CATEGORY FUNCTIONS //////////////////
+
 // _______________________________________________
 // _________________  categories _________________
 // _______________________________________________
@@ -236,7 +243,7 @@ export function getDonationsCount(resourceId: i32): u128 {
  * 
  * @returns categories
  */
- export function getCategoryTitles(): string[] {
+export function getCategoryTitles(): string[] {
   const numCategories = categories.length;
   const result = new Array<string>(numCategories);
 
@@ -251,7 +258,7 @@ export function getDonationsCount(resourceId: i32): u128 {
  * 
  * @returns categories with attributes
  */
- export function getCategories(): Category[] {
+export function getCategories(): Category[] {
   const numCategories = categories.length;
   const result = new Array<Category>(numCategories);
 
@@ -262,6 +269,11 @@ export function getDonationsCount(resourceId: i32): u128 {
   return result;
 }
 
+/**
+ * 
+ * @param categoryTitle 
+ * @returns resources linked to given category
+ */
 export function getLinkedResources(categoryTitle: string): Resource[] {
   const categoryId = categoriesMap.getSome(categoryTitle).category_id
   const category = categories[categoryId]
@@ -275,15 +287,21 @@ export function getLinkedResources(categoryTitle: string): Resource[] {
   return result
 }
 
-// ______________________________________________
-// _________________  bookmarks _________________
-// ______________________________________________
+////////////////// BOOKMARK FUNCTIONS //////////////////
 
+// _____________________________________________
+// _______________  add bookmark _______________
+// _____________________________________________
+/**
+ * 
+ * @param resourceId 
+ */
 export function addBookmark(resourceId: i32): void {
   assert(resourceId >= 0, "resourceId must be bigger than 0");
   assert(resourceId < resources.length, "resourceId must be valid");
   const resource = resources[resourceId]
-  // voter cannot vote twice for same resource
+  
+  // resource can be bookmarked only once
   assert(!resource.bookmarks.has(Context.sender), "Already bookmarked!")
 
   resource.bookmarks.add(Context.sender)
@@ -293,6 +311,13 @@ export function addBookmark(resourceId: i32): void {
   logging.log(resource)
 }
 
+// ______________________________________________
+// ______________  remove bookmark ______________
+// ______________________________________________
+/**
+ * 
+ * @param resourceId 
+ */
 export function removeBookmark(resourceId: i32): void {
   assert(resourceId >= 0, "resourceId must be bigger than 0");
   assert(resourceId < resources.length, "resourceId must be valid");
@@ -307,6 +332,34 @@ export function removeBookmark(resourceId: i32): void {
   logging.log('bookmark removed')
   logging.log(resource)
 }
+
+// ____________________________________________
+// ______________  get bookmarks ______________
+// ____________________________________________
+/**
+ * 
+ * @param accountId
+ * @returns resources bookmarked by accountId
+ */
+export function getBookmarks(accountId: string): Resource[] {
+  const resources = getResources()
+  const numResources = resources.length
+  const result = new Array<Resource>();
+
+  let n = 0
+  for(let i = 0; i < numResources; i++) {
+    if (resources[i].bookmarks.size > 0) {
+      if(resources[i].bookmarks.has(accountId)){
+        result[n] = resources[i]
+        n += 1
+      }
+    }
+  }
+  
+  return result
+}
+
+////////////////// VALIDATIONS //////////////////
 
 // __________________________________________
 // ______________ validate url ______________
@@ -332,6 +385,7 @@ function isEmptyString(strValue: string): bool{
   return (!!strValue)
 }
 
+////////////////// CLEAR STORAGE //////////////////
 
 // __________________________________________________
 // _________________  clear storage _________________
@@ -345,7 +399,7 @@ export function deleteCategoriesMap(): void {
   }
 }
 
-export function deleteResources(): void {
+export function clearStorage(): void {
   while (resources.length !== 0) {
     resources.pop()
   }
@@ -358,5 +412,3 @@ export function deleteResources(): void {
   // , categoriesMap
   urls.clear()
 }
-
-

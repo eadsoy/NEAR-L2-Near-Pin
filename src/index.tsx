@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import getConfig from './config.js';
+import {getConfig} from './config';
 import * as nearAPI from 'near-api-js';
 import './index.css';
 
@@ -18,7 +18,7 @@ async function initContract() {
   });
 
   // Needed to access wallet
-  const walletConnection = new nearAPI.WalletConnection(near);
+  const walletConnection:any = new nearAPI.WalletConnection(near,'') 
 
   // Load in account data
   let currentUser;
@@ -30,20 +30,23 @@ async function initContract() {
   }
 
   // Initializing our contract APIs by contract name and configuration
-  const contract = await new nearAPI.Contract(walletConnection.account(), nearConfig.contractName, {
+  const contract = new nearAPI.Contract(walletConnection.account(), nearConfig.contractName, {
     // View methods are read-only – they don't modify the state, but usually return some value
-    viewMethods: ['getResources', 'getResourcesByRange', 'getVotesCount', 'getDonationsCount', 'getCategories', 'getCategoryTitles', 'sortByVoteCount', 'getResourceCount', 'getLinkedResources', 'getBookmarks'],
+    viewMethods: ['getResources', 'getResourcesByRange', 'getVotesCount', 'getDonationsCount', 'getCategories', 'getCategoryTitles', 'sortByVoteCount', 'getResourceCount', 'getLinkedResources'],
     // Change methods can modify the state, but you don't receive the returned value when called
     changeMethods: ['addResource', 'addVote', 'addDonation', 'addBookmark', 'removeBookmark'],
     // Sender is the account ID to initialize transactions.
     // getAccountId() will return empty string if user is still unauthorized
-    sender: walletConnection.getAccountId()
+    // sender: walletConnection.getAccountId() 
   });
 
   return { contract, currentUser, nearConfig, walletConnection };
 }
 
-window.nearInitPromise = initContract()
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+const windowElment = window as any 
+
+windowElment.nearInitPromise = initContract()
   .then(({ contract, currentUser, nearConfig, walletConnection }) => {
     ReactDOM.render(
       <App

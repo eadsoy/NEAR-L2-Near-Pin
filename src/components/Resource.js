@@ -133,7 +133,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
           <div className="flex flex-row">
             <h2 className="text-2xl font-bold text-gray-800 mr-4">{title}</h2>
 
-            {resourcesFromAirtable.filter(res => res.resource_id === resourceId.toString())[0].category_id.map((categoryIndex, index) => {
+            {resourcesFromAirtable && resourcesFromAirtable.filter(res => res.resource_id === resourceId.toString())[0].category_id.map((categoryIndex, index) => {
               categoryIndex = parseInt(categoryIndex,10)
               return <div key ={categoryIndex} className={`ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 ${bgColors[categoryIndex % 9]} ${textColors[categoryIndex % 9]} rounded-full`}>{category[index]}</div>
             })} 

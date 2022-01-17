@@ -267,7 +267,7 @@ const ResourceList = ({ contract, currentUser, categoryTitles, categories, resou
         <div >
           <span className="text-gray-700">Categories</span>
           <div className="mt-2">
-          {categories.map((category, index) => {
+          {categories && categories.map((category, index) => {
             return <div>
               <label id = {category.category_id} key={category.category_id} className="inline-flex items-center">
                 <input id = {category.category_id} key={category.category_id} type="checkbox" className="form-checkbox" checked={checkedState[index]} onChange={filter} value={category.category_title}/>

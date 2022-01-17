@@ -4,9 +4,12 @@ import PropTypes from 'prop-types';
 import CreateResource from './components/CreateResource';
 import ResourceList from './components/ResourceList';
 import logo from './near_logo.png'
+import useData from './hooks/airtableData';
 
 const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const [navbarOpen, setNavbarOpen] = React.useState(false);
+
+  const { getData, urls, categoryTitles, categories, resourceCount, resourcesFromAirtable } = useData();
 
   const signIn = () => {
     wallet.requestSignIn(
@@ -19,6 +22,17 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
     wallet.signOut();
     window.location.replace(window.location.origin + window.location.pathname);
   };
+
+  React.useEffect(() => {
+    const dataId = setInterval(async () => {
+      await getData()
+    }, 1000);
+
+   return () => {
+    clearInterval(dataId);
+  }
+
+  }, [getData]);
 
   return (
     <>
@@ -60,8 +74,8 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
                 </div>
               </nav>
               
-              <CreateResource contract={contract} currentUser={currentUser}/>
-              <ResourceList contract={contract} currentUser={currentUser}/>
+              <CreateResource contract={contract} currentUser={currentUser} categoryTitles={categoryTitles} categories={categories} urls={urls} resourceCount={resourceCount}/>
+              <ResourceList contract={contract} currentUser={currentUser} categoryTitles={categoryTitles} categories={categories} resourcesFromAirtable = {resourcesFromAirtable}/>
             </div>
           : 
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">

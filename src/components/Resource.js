@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ATTACHED_GAS = Big(3).times(10 ** 13).toFixed();
 
-export function Resource({ contract, creator, url, title, category, vote_score, votes, id, currentUser, total_donations, bookmarks, linked_categories}) {
+export function Resource({ contract, creator, url, title, category, vote_score, votes, id, currentUser, total_donations, bookmarks, categoryTitles, resourcesFromAirtable, resourceId}) {
   // check if already voted
   const [voted, setVoted] = useState(votes.indexOf(currentUser.accountId) === -1 ? -1 : 0)
   // button hover
@@ -25,12 +25,10 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   // vote count
   const [voteCount, setVoteCount] = useState(vote_score);
   const [donated, setDonated] = useState("");
-  //const [bookmarked, setBookmarked] = useState(false)
   const [bookmarked, setBookmarked] = useState(bookmarks.indexOf(currentUser.accountId) === -1 ? -1 : 0)
 
   const handleClick = async (event) => {
     // increment vote count by 1
-    console.log('id',id)
     setVoteCount(voteCount + 1);
     setLoading(true)
     // call contract function addVote
@@ -52,7 +50,7 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
   const handleDonation = async () => {
     // call contract function addDonation
     const donation = await contract.addDonation({ resourceId: id }, ATTACHED_GAS, 
-    Big({donated}.donated).times(10 ** 24).toFixed());
+    Big(donated).times(10 ** 24).toFixed());
     console.log('donation', donation)
   }
 
@@ -74,7 +72,6 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
 
   const bgColors = ["bg-blue-200", "bg-green-200", "bg-red-200", "bg-yellow-200", "bg-purple-200", "bg-gray-200", "bg-rose-200", "bg-teal-200", "bg-cool-gray-200"]
   const textColors = ["text-blue-700", "text-green-700", "text-red-700", "text-yellow-700", "text-purple-700", "text-gray-700", "text-rose-700", "text-teal-700", "text-cool-gray-700"]
- // console.log("categoryColor", categoryColors)
 
   const notify = (type) => {
     switch (type) {
@@ -136,7 +133,8 @@ export function Resource({ contract, creator, url, title, category, vote_score, 
           <div className="flex flex-row">
             <h2 className="text-2xl font-bold text-gray-800 mr-4">{title}</h2>
 
-            {linked_categories.map((categoryIndex, index) => {
+            {resourcesFromAirtable.filter(res => res.resource_id === resourceId.toString())[0].category_id.map((categoryIndex, index) => {
+              categoryIndex = parseInt(categoryIndex,10)
               return <div key ={categoryIndex} className={`ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 ${bgColors[categoryIndex % 9]} ${textColors[categoryIndex % 9]} rounded-full`}>{category[index]}</div>
             })} 
  

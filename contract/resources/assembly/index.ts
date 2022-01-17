@@ -1,6 +1,5 @@
-import { Context, logging, PromiseStatus, u128} from "near-sdk-core"
-import { Resource, Donation, Category, resources, donations, urls, categories, categoriesMap} from "./models"
-import { PAGE_SIZE } from "../utils"
+import { Context, logging, PromiseStatus, u128, ContractPromiseBatch} from "near-sdk-core"
+import { Resource, Donation, resources, donations} from "./models"
 
 
 ////////////////// RESOURCE FUNCTIONS //////////////////
@@ -15,6 +14,11 @@ import { PAGE_SIZE } from "../utils"
  * @param category 
  */
 export function addResource(title: string, url: string, category: string[]): void {
+  logging.log("usedGas")
+  logging.log(Context.usedGas)
+  logging.log("storageUsage")
+  logging.log(Context.storageUsage)
+  
   // url, title, category can't be empty
   assert(isEmptyString(url), "URL can't be empty")
   assert(isEmptyString(title), "title can't be empty")
@@ -23,66 +27,24 @@ export function addResource(title: string, url: string, category: string[]): voi
   assert(category.length <= 3, "category array can't be longer than 3")
   // url must be valid
   assert(isValidURL(url), "URL is not valid, must start with valid https://")
-  assert(!urls.has(url), "URL already exists")
-  
-  // fetch existing categories by their titles
-  const existingCategories = getCategoryTitles()
-  
-  // get category array input length
-  const inputCategoriesLength = category.length
 
   // new set to link category ids to new Resource
   const categoryIds = new Set<i32>();
-
-  // iterate over category array (consists of category titles)
-  // and check whether each item in category array
-  // exists in existingCategories array. 
-  for(let i = 0; i < inputCategoriesLength; i++) {
-    // if category item doesn't exist, create new one
-    // and add to categories
-    if (!existingCategories.includes(category[i])) {
-    const newCategory = new Category()
-
-    newCategory.category_title = category[i] 
-    newCategory.linked_resources.push(resources.length) 
-    newCategory.category_id = (categories.length )
-
-    categoryIds.add(categories.length)
-
-    categories.push(newCategory)
-    categoriesMap.set(category[i], newCategory)
-   } else { // if category already exists
-
-    // get id of existing category from categoriesMap
-    const existingCategoryId = categoriesMap.getSome(category[i]).category_id
-    // get category by id from categories
-    const existingCategory = categories[existingCategoryId]
-
-    // add new resource id to existing Category's linked_resources
-    categoriesMap.getSome(category[i]).linked_resources.push(resources.length)
-    existingCategory.linked_resources.push(resources.length)
-    // update storage
-    categories.replace(existingCategoryId, existingCategory)
-    
-    // add category_id to categoryIds 
-    categoryIds.add(existingCategory.category_id)
-   }
-  }
 
   // create new Resource
   const resource = new Resource(title, url, category)
   
   resource.resourceId = resources.length
-  resource.linked_categories = categoryIds
 
   // save the resource to storage
   resources.push(resource)
 
-  // add url to urls
-  urls.add(url)
-
   logging.log('resource created')
   logging.log(resource)
+  logging.log("usedGas")
+  logging.log(Context.usedGas)
+  logging.log("storageUsage")
+  logging.log(Context.storageUsage)
 }
 
 // ___________________________________________________
@@ -93,13 +55,20 @@ export function addResource(title: string, url: string, category: string[]): voi
  * @returns all resources
  */
 export function getResources(): Resource[] {
+  // logging.log("usedGas")
+  // logging.log(Context.usedGas)
+  // logging.log("storageUsage")
+  // logging.log(Context.storageUsage)
   const numResources = resources.length;
   const result = new Array<Resource>(numResources);
 
   for(let i = 0; i < numResources; i++) {
     result[i] = resources[i];
   }
-
+  // logging.log("usedGas")
+  // logging.log(Context.usedGas)
+  // logging.log("storageUsage")
+  // logging.log(Context.storageUsage)
   return result;
 }
 
@@ -130,7 +99,6 @@ export function getResourcesByRange(startIndex: i32, endIndex: i32): Resource[] 
     }
     result[i] = resources[i + startIndex];
   }
-  
   return result;
 }
 
@@ -191,7 +159,6 @@ export function addVote(resourceId: i32 ): void {
   logging.log(resource)
 }
 
-
 ////////////////// DONATION FUNCTIONS //////////////////
 
 // ____________________________________________________
@@ -216,8 +183,12 @@ export function addDonation(resourceId: i32): void {
   // create new Donation and add to donations
   donations.push(new Donation())
 
-  logging.log('donation sent')
-  logging.log(resource)
+  // transfer donation to creator account 
+  const toCreator = ContractPromiseBatch.create(resource.creator)
+  toCreator.transfer(Context.attachedDeposit)
+
+  // logging.log('donation sent')
+  // logging.log(resource)
 }
 
 // ____________________________________________________
@@ -229,62 +200,9 @@ export function addDonation(resourceId: i32): void {
  * @returns total_donations
  */
 export function getDonationsCount(resourceId: i32): u128 {
-  const resource = resources[resourceId];
+  const resource = resources[resourceId]
   
   return resource.total_donations
-}
-
-////////////////// CATEGORY FUNCTIONS //////////////////
-
-// _______________________________________________
-// _________________  categories _________________
-// _______________________________________________
-/**
- * 
- * @returns categories
- */
-export function getCategoryTitles(): string[] {
-  const numCategories = categories.length;
-  const result = new Array<string>(numCategories);
-
-  for(let i = 0; i < numCategories; i++) {
-    result[i] = categories[i].category_title;
-  }
-
-  return result;
-}
-
-/**
- * 
- * @returns categories with attributes
- */
-export function getCategories(): Category[] {
-  const numCategories = categories.length;
-  const result = new Array<Category>(numCategories);
-
-  for(let i = 0; i < numCategories; i++) {
-    result[i] = categories[i];
-  }
-
-  return result;
-}
-
-/**
- * 
- * @param categoryTitle 
- * @returns resources linked to given category
- */
-export function getLinkedResources(categoryTitle: string): Resource[] {
-  const categoryId = categoriesMap.getSome(categoryTitle).category_id
-  const category = categories[categoryId]
-
-  const result = new Array<Resource>();
-  const numResources = category.linked_resources.length
-  
-  for(let i = 0; i < numResources; i++) {
-    result[i] = resources[category.linked_resources[i]]
-  }
-  return result
 }
 
 ////////////////// BOOKMARK FUNCTIONS //////////////////
@@ -355,7 +273,7 @@ export function getBookmarks(accountId: string): Resource[] {
       }
     }
   }
-  
+
   return result
 }
 
@@ -391,14 +309,6 @@ function isEmptyString(strValue: string): bool{
 // _________________  clear storage _________________
 // __________________________________________________
 
-export function deleteCategoriesMap(): void {
-  const numCategories = categories.length;
-
-  for(let i = 0; i < numCategories; i++) {
-    categoriesMap.delete(categories[i].category_title);
-  }
-}
-
 export function clearStorage(): void {
   while (resources.length !== 0) {
     resources.pop()
@@ -406,9 +316,4 @@ export function clearStorage(): void {
   while (donations.length !== 0) {
     donations.pop()
   }
-  while (categories.length !== 0) {
-    categories.pop()
-  }
-  // , categoriesMap
-  urls.clear()
 }

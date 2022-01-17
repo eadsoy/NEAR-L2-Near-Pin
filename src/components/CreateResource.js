@@ -3,10 +3,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CreatableSelect from 'react-select/creatable';
 import Big from 'big.js';
+import useData from '../hooks/airtableData';
 
 const ATTACHED_GAS = Big(3).times(10 ** 13).toFixed();
 
-export default function Modal({ contract, currentUser }) {
+export default function Modal({ contract, currentUser, categoryTitles, urls, categories, resourceCount }) {
   // show/hide modal
   const [showModal, setShowModal] = useState(false);
   // set resource fields
@@ -15,11 +16,11 @@ export default function Modal({ contract, currentUser }) {
   const [category, setCategory] = useState([]);
   // set disabled attr
   const [loading, setLoading] = useState(false);
-  // set categories array
-  const [categories, setCategories] = useState([]);
   // notifications
   const [created, setCreated] = useState(true);
   
+  const { createCategory, createUrl, createResource} = useData();
+
   // const XCC_GAS = 20_000_000_000_000;
   const handleChange =(newValue) => {
     let selected = []
@@ -39,6 +40,56 @@ export default function Modal({ contract, currentUser }) {
       notify()
     } else {
       setCreated(true)
+
+      // TODO: Check whether url exists
+      // If it does, don't allow adding resource
+      // If it doesn't exist:
+      //  1- create url on airtable
+
+      
+      if(urls.includes(url)){
+        notify()
+      }
+
+      const linkedCategories = [];
+  
+      for(let i = 0; i < category.length; i++){
+        if(categoryTitles.includes(category[i])){
+          let obj = categories.find(k => k.category_title === category[i]);
+          linkedCategories.push(obj.id)
+        } else {
+          const newCategory = await createCategory({
+            category_id: (categoryTitles.length++).toString(),
+            category_title: category[i]
+          })
+
+          linkedCategories.push(newCategory.id)
+        
+        }
+      }
+
+      // TODO: Check whether category exists
+      // If it does exist: 
+      // 1- assign category id to resource 
+      // 2- create resource with category id
+
+      // If it doesn't exist:
+      // 1- assign id to category and create category record on airtable 
+      // 2- create resource on airtable
+      // 3- create resource on contract
+      
+      const urlId = await createUrl({
+        url: url
+      })
+
+      const resourceData = {
+        resource_id: resourceCount.toString(),
+        linked_categories: linkedCategories,
+        linked_url: [urlId.id]
+      }
+
+      await createResource(resourceData)
+
       const resource = await contract.addResource({ title, category, url, accountId: currentUser.accountId}, ATTACHED_GAS)
       .then(() => {
         setTitle("");
@@ -58,17 +109,6 @@ export default function Modal({ contract, currentUser }) {
       console.log('my resource', resource);
     }
   }
-
-  /// fetch categories
-  useEffect(() => {
-    const categoryId = setInterval(() => {
-      contract
-        .getCategoryTitles()
-        .then((categories) => {setCategories(categories)})
-    }, 1000);
-
-    return () => clearInterval(categoryId);
-  }, [contract]);
 
   const notify = (type) => {
     switch (type) {
@@ -145,7 +185,6 @@ export default function Modal({ contract, currentUser }) {
                         autoComplete="off"
                         autoFocus
                         id="title"
-                        // placeholder="fdsfds"
                         //required
                         value={title}
                         onChange={({ target }) => setTitle(target.value)}
@@ -170,9 +209,8 @@ export default function Modal({ contract, currentUser }) {
                         <CreatableSelect
                           isClearable
                           isMulti
-                          //onChange={(options) => (setCategory(options.forEach(i  => { return i.value})))}
                           onChange={handleChange}
-                          options={categories.map((category) => ({value: category, label: category}))}
+                          options={categoryTitles.map((category) => ({value: category, label: category}))}
                           placeholder="Choose a category and/ or create new one"
                         />
                     </div>

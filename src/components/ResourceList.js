@@ -1,12 +1,12 @@
 // src/components/ResourceList.js
 import { useEffect, useState } from "react";
 import { Resource } from "./Resource";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
 
 const PER_PAGE_LIMIT = 10;
 
-const ResourceList = ({ contract, currentUser}) => {
+const ResourceList = ({ contract, currentUser, categoryTitles, categories, resourcesFromAirtable}) => {
   const [resources, setResources] = useState([]);
   // sort resources by vote_count
   const [sortedResources, setSortedResources] = useState([])
@@ -15,7 +15,6 @@ const ResourceList = ({ contract, currentUser}) => {
   const [loading, setLoading] = useState(false);
   const [totalPageCount, setTotalPageCount] = useState([])
   const [resourceCount, setResourceCount] = useState(0)
-  const [categories, setCategories] = useState([])
   const [filtered, setFiltered] = useState(false)
   //TODO: FIX 
   const [checkedState, setCheckedState] = useState(
@@ -24,41 +23,41 @@ const ResourceList = ({ contract, currentUser}) => {
   const [bookmarks, setBookmarks] = useState([])
   const filter = async ({ target }) => {
     const updatedCheckedState = checkedState.map((item, index) => 
-      index === parseInt(target.id,10) ? !item : item
+    index === parseInt(target.id,10) ? !item : item
     );
 
     setCheckedState(updatedCheckedState);
   
-    // console.log('target.id1', target.id)
-    // console.log('updatedCheckedState', updatedCheckedState)
     const count = updatedCheckedState.filter(checked => checked === true).length
-    // console.log('count', count)
-    // console.log('updatedCheckedState[parseInt(target.id,10)]', updatedCheckedState[parseInt(target.id,10)])
-    let linkedResources;
+
+    let linkedResourceIds = [];
+    let matchedCategoryIds = [];
+    let linkedResources = [];
     
     if (count >= 1) {
-      // console.log("filtered.indexOf(true)", checkedState.indexOf(true))
-      if(updatedCheckedState[parseInt(target.id,10)] === true) {
-        setFiltered(true)
-        console.log('target.id', target.id)
-        linkedResources = await contract.getLinkedResources({categoryTitle: target.value})
-        
-        if(count > 1) {
-          console.log('filteredResources2', filteredResources)
-          console.log('linkedResources2', linkedResources)
-          
-          const concatedResources = [...new Set([...linkedResources,...filteredResources])]
-          const allResources = [...new Map(concatedResources.map(item => [JSON.stringify(item), item])).values()];
-          console.log(allResources);
-          
-          setFilteredResources(allResources)
-  
-        } else {
-          setFilteredResources(linkedResources)
-          console.log('linkedResources', linkedResources)
-        }
+      setFiltered(true)
 
-      }
+      updatedCheckedState.forEach((state, index) => {
+        if (state === true) {
+          matchedCategoryIds.push(index.toString())
+        }
+      })
+
+      categories.forEach(category => {
+        if(matchedCategoryIds.includes(category.category_id)){
+          linkedResourceIds.push(...category.linked_resources)
+        }
+      })
+
+      linkedResourceIds = new Set(linkedResourceIds)
+
+      linkedResourceIds.forEach(resourceId => {
+        linkedResources.push(resources[resourceId])
+      })
+
+      linkedResources = [...new Set(linkedResources)]
+
+      setFilteredResources(linkedResources)
     } else {
       setFiltered(false)
     }
@@ -118,19 +117,10 @@ const ResourceList = ({ contract, currentUser}) => {
          })
    }, 1000);
 
-    const idCategories = setInterval(() => {
-      contract
-      .getCategories()
-      .then((categories) => { 
-        setCategories(categories) 
-      })
-    }, 1000);
-
     const idBookmarks = setInterval(() => {
       contract
        .getBookmarks({accountId: currentUser.accountId})
        .then((bookmarks) => { 
-         console.log('bookmarks', bookmarks)
          setBookmarks(bookmarks)
          })
    }, 1000);
@@ -139,14 +129,12 @@ const ResourceList = ({ contract, currentUser}) => {
       clearInterval(id);
       clearInterval(idSorted);
       clearInterval(totalResources)
-      clearInterval(idCategories)
       clearInterval(idBookmarks)
     }
   }, [page, contract, resourceCount, currentUser]);
 
   return (
     <>
-
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2">
           <Tabs defaultIndex={0} onSelect={() => {setPage(1)}} className="pt-6 mt-6">
@@ -175,7 +163,7 @@ const ResourceList = ({ contract, currentUser}) => {
                   (<div>
                   {filteredResources.map((resource) => (
                     <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                      <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                      <Resource id={resource.resourceId} contract={contract}{...resource} currentUser={currentUser} categoryTitles={categoryTitles} resourcesFromAirtable={resourcesFromAirtable}/>
                     </li>
                   ))}
                   
@@ -184,7 +172,7 @@ const ResourceList = ({ contract, currentUser}) => {
                   (<div>
                     {resources.map((resource) => (
                     <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                      <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                      <Resource id={resource.resourceId} contract={contract}{...resource} currentUser={currentUser} categoryTitles={categoryTitles} resourcesFromAirtable={resourcesFromAirtable}/>
                     </li>
                   )).reverse()}
                   
@@ -211,7 +199,7 @@ const ResourceList = ({ contract, currentUser}) => {
                   (<div>
                   {filteredResources.map((resource) => (
                     <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                      <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                      <Resource id={resource.resourceId} contract={contract}{...resource} currentUser={currentUser} categoryTitles={categoryTitles} resourcesFromAirtable={resourcesFromAirtable}/>
                     </li>
                   ))}
                   
@@ -220,15 +208,12 @@ const ResourceList = ({ contract, currentUser}) => {
                   (<div>
                     {sortedResources.map((resource) => (
                       <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                        <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                        <Resource id={resource.resourceId} contract={contract}{...resource} currentUser={currentUser} categoryTitles={categoryTitles} resourcesFromAirtable={resourcesFromAirtable}/>
                       </li>
                     ))}
                   
                   </div>)
                 }
-
-                
-
               </ul>
             </TabPanel>
             <TabPanel>
@@ -248,7 +233,7 @@ const ResourceList = ({ contract, currentUser}) => {
                   <div>
                     {bookmarks.map((resource) => (
                       <li key={resource.resourceId} className="pl-6 ml-6 mt-6 pt-6">
-                        <Resource id={resource.resourceId} contract={contract}{...resource}  currentUser={currentUser}/>
+                        <Resource id={resource.resourceId} contract={contract}{...resource} currentUser={currentUser} categoryTitles={categoryTitles} resourcesFromAirtable={resourcesFromAirtable}/>
                       </li>
                     ))}
                   
